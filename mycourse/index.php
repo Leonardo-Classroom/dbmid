@@ -23,8 +23,8 @@
 		<link href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css" media="all" rel="stylesheet">
 		<!--fontawesome-->
 	
-		<link href="/main.css" rel="stylesheet" type="text/css" />
-		<script src="/main.js">
+		<link href="/dbmid/main.css" rel="stylesheet" type="text/css" />
+		<script src="/dbmid/main.js">
 		</script>
 	
 		<link href="main.css" rel="stylesheet" type="text/css" />
@@ -32,15 +32,15 @@
 		</script>
 
 		<link rel="stylesheet/scss" type="text/css" href="/bubble.scss" />
-		<link href="/bubble.css" rel="stylesheet" type="text/css" />
-		<script src="/course.js"></script>
+		<link href="/dbmid/bubble.css" rel="stylesheet" type="text/css" />
+		<script src="/dbmid/course.js"></script>
 
 		
 
   </head>
   <body class="">
     <?php
-			include $_SERVER['DOCUMENT_ROOT'].'/model/preloader/index.php';
+			include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/preloader/index.php';
 		?>
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		  <div class="container-fluid">
@@ -50,7 +50,7 @@
 		    </button>
 
 				<a class="navbar-brand py-0" href="#">
-					<img src="/asset/fculogo.svg" class="img-fluid navbar-logo py-1">
+					<img src="/dbmid/asset/fculogo.svg" class="img-fluid navbar-logo py-1">
 
 					<?php
 						// include $_SERVER['DOCUMENT_ROOT'].'/model/fculogo/index.php';
@@ -89,8 +89,8 @@
 
 
 
-            <link href="/table.css" rel="stylesheet" type="text/css" />
-            <link href="/mycourse/main.css" rel="stylesheet" type="text/css" />
+            <link href="/dbmid/table.css" rel="stylesheet" type="text/css" />
+            <link href="/dbmid/mycourse/main.css" rel="stylesheet" type="text/css" />
             <div class="col-12 px-1" id="printArea">
             
             	<div class="col px-2">
@@ -670,7 +670,7 @@
 
       
 		
-		<script src="/preLoaderClose.js" ></script>
+		<script src="/dbmid/preLoaderClose.js" ></script>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.1/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>

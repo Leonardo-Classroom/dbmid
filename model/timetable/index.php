@@ -1,4 +1,4 @@
-<link href="/table.css" rel="stylesheet" type="text/css" />
+<link href="/dbmid/table.css" rel="stylesheet" type="text/css" />
 <div class="col-12 px-1" id="printArea">
 
 	<div class="col px-2">

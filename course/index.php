@@ -23,8 +23,8 @@
 		<link href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css" media="all" rel="stylesheet">
 		<!--fontawesome-->
 	
-		<link href="/main.css" rel="stylesheet" type="text/css" />
-		<script src="/main.js">
+		<link href="/dbmid/main.css" rel="stylesheet" type="text/css" />
+		<script src="/dbmid/main.js">
 		</script>
 	
 		<link href="main.css" rel="stylesheet" type="text/css" />
@@ -32,15 +32,15 @@
 		</script>
 
 		<link rel="stylesheet/scss" type="text/css" href="/bubble.scss" />
-		<link href="/bubble.css" rel="stylesheet" type="text/css" />
-		<script src="/course.js"></script>
+		<link href="/dbmid/bubble.css" rel="stylesheet" type="text/css" />
+		<script src="/dbmid/course.js"></script>
 
 		
 
   </head>
   <body class="">
     <?php
-			include $_SERVER['DOCUMENT_ROOT'].'/model/preloader/index.php';
+			include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/preloader/index.php';
 		?>
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		  <div class="container-fluid">
@@ -50,7 +50,7 @@
 		    </button>
 
 				<a class="navbar-brand py-0" href="#">
-					<img src="/asset/fculogo.svg" class="img-fluid navbar-logo py-1">
+					<img src="/dbmid/asset/fculogo.svg" class="img-fluid navbar-logo py-1">
 
 					<?php
 						// include $_SERVER['DOCUMENT_ROOT'].'/model/fculogo/index.php';
@@ -67,16 +67,16 @@
 		          <a class="nav-link postloader" aria-current="page" href="/">首頁</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link postloader" href="/login">登入</a>
+		          <a class="nav-link postloader" href="/dbmid/login">登入</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link postloader" href="/register">註冊</a>
+		          <a class="nav-link postloader" href="/dbmid/register">註冊</a>
 		        </li>
 				<li class="nav-item">
-		          <a class="nav-link postloader active" href="/course">選課</a>
+		          <a class="nav-link postloader active" href="/dbmid/course">選課</a>
 		        </li>
                 <li class="nav-item">
-		          <a class="nav-link postloader" href="/mycourse">我的課表</a>
+		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
 		        </li>
 		      </ul>
 
@@ -90,7 +90,7 @@
 					<div class="col-12 col-md-10 col-lg-8 bingShadow bg-white rounded-30 px-3" for="searchBox">
 						<div class="col">
 							<div class="row">
-								<img src="/asset/search.svg" class="img-fluid col-auto">
+								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
 								<div class="col px-0">
 									<input type="text" class="col-12 h-100 border-0 py-3" id="searchBox">
 								</div>
@@ -148,8 +148,8 @@
 
 					<?php
 						for($i=0;$i<5;$i++){
-							include $_SERVER['DOCUMENT_ROOT'].'/model/card/index.php';
-							include $_SERVER['DOCUMENT_ROOT'].'/model/card/cardtest.php';
+							include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/card/index.php';
+							include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/card/cardtest.php';
 						}
 						
 					?>
@@ -170,7 +170,7 @@
 					<div class="chatIn col-12 p-0">
 
 							<?php
-								include $_SERVER['DOCUMENT_ROOT'].'/model/timetable/index.php';
+								include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/timetable/index.php';
 							?>
 
 						
@@ -188,7 +188,7 @@
 		
 		
 		
-		<script src="/preLoaderClose.js" ></script>
+		<script src="/dbmid/preLoaderClose.js" ></script>
 
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.1/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>

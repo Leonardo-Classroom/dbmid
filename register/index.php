@@ -24,8 +24,8 @@
 		<link href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css" media="all" rel="stylesheet">
 		<!--fontawesome-->
 	
-		<link href="/main.css" rel="stylesheet" type="text/css" />
-		<script src="/main.js">
+		<link href="/dbmid/main.css" rel="stylesheet" type="text/css" />
+		<script src="/dbmid/main.js">
 		</script>
 	
 		<link href="main.css" rel="stylesheet" type="text/css" />
@@ -37,7 +37,7 @@
   </head>
   <body class="bg-primary">
 		<?php
-			include $_SERVER['DOCUMENT_ROOT'].'/model/preloader/index.php';
+			include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/preloader/index.php';
 		?>
 
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -48,7 +48,7 @@
 		    </button>
 
 				<a class="navbar-brand py-0" href="#">
-					<img src="/asset/fculogo.svg" class="img-fluid navbar-logo py-1">
+					<img src="/dbmid/asset/fculogo.svg" class="img-fluid navbar-logo py-1">
 				</a>
 				
 		    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,13 +61,13 @@
 		          <a class="nav-link postloader" aria-current="page" href="/">首頁</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link postloader" href="/login">登入</a>
+		          <a class="nav-link postloader" href="/dbmid/login">登入</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link postloader active" href="/register">註冊</a>
+		          <a class="nav-link postloader active" href="/dbmid/register">註冊</a>
 		        </li>
 						<li class="nav-item">
-		          <a class="nav-link postloader" href="/course">選課</a>
+		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
 		        </li>
 		      </ul>
 
@@ -83,12 +83,12 @@
 				<div class="col-md col-xl"></div>
 				
 	      <div class="d-none d-md-block col-md-5 col-lg-4 ">
-	        <img src="/asset/fculogo.png" class="img-fluid" >      
+	        <img src="/dbmid/asset/fculogo.png" class="img-fluid" >      
 	      </div>
 	      <div class="col-12 col-md-6 col-lg-5 font-black onePageHeightAndCenterVertically antiFlow">
 
 					<div class="d-flex justify-content-center w-100">
-						<img src="/asset/fculogo.png" class="img-fluid d-block d-md-none col-7 col-sm-6 mb-2">
+						<img src="/dbmid/asset/fculogo.png" class="img-fluid d-block d-md-none col-7 col-sm-6 mb-2">
 					</div>
 					
 					<div class="bg-white rounded-30 p-3 bingShadow">
@@ -160,7 +160,7 @@
 
 		
     
-    <script src="/preLoaderClose.js" ></script>
+    <script src="/dbmid/preLoaderClose.js" ></script>
 		<!--bootstrap~-->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.1/dist/umd/popper.min.js" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script>
