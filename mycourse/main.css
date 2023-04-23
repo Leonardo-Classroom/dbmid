@@ -1,0 +1,14 @@
+
+
+.f-height {
+    height: calc((100vh - 82px - 44px) / 13)!important;
+    background-color: #F5F5F5;
+}
+
+@media (min-width: 992px) { 
+	.f-height {
+		height: calc((100vh - 82px - 44px) / 13)!important;
+		background-color: #F5F5F5;
+	}
+	
+}
