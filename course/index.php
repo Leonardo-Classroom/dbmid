@@ -103,17 +103,17 @@
 		<div class="bg-primary py-3 py-md-4 py-md-5 mb-3">
 			<div class="container">
 				<div class="d-flex justify-content-center w-100  ">
-					<div class="col-12 col-md-10 col-lg-8 bingShadow bg-white rounded-30 px-3" for="searchBox">
+					<form class="col-12 col-md-10 col-lg-8 bingShadow bg-white rounded-30 px-3" for="searchBox" action="">
 
 						<div class="col">
 							<div class="row">
 								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
 								<div class="col px-0">
-									<input type="text" class="col-12 h-100 border-0 py-3" id="searchBox">
+									<input type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="科目名稱">
 								</div>
 								
 								<div class="col-auto px-0 rounded-30 py-1">
-									<a class="btn btn-primary h-100 w-100 d-flex align-items-center rounded-30" data-bs-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filter">
+									<a class="btn btn-primary h-100 w-100 d-flex align-items-center rounded-30 px-3" data-bs-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filter">
 										<i class="fa-solid fa-filter"></i>
 									</a>
 								</div>
@@ -123,14 +123,11 @@
 						</div>
 
 
-						<div class="collapse pb-2" id="filter">
-							<div class="col">
-								<div class="row">
+						<div class="collapse pb-2 rounded-30" id="filter">
+							<div class="col rounded-30">
+								<div class="row rounded-30">
 									<div class="col-12 col-md-6 mb-2">
 										<input type="text" class="col-12 py-1" id="" placeholder="選課代號">
-									</div>
-									<div class="col-12 col-md-6 mb-2">
-										<input type="text" class="col-12 py-1" id="" placeholder="科目名稱">
 									</div>
 									<div class="col-12 col-md-6 mb-2">
 										<input type="text" class="col-12 py-1" id="" placeholder="開課教師姓名">
@@ -170,6 +167,11 @@
 										</div>
 										
 									</div>
+									<div class="col-12 col-md-6 mb-2" for="is_exclude">
+										<input class="py-1" type="checkbox" id="is_exclude" name="is_exclude">
+										<label class="py-1" for="is_exclude">過濾衝堂</label>
+										<!-- <input type="text" class="col-12 py-1" id="" placeholder="科目名稱"> -->
+									</div>
 								</div>
 
 								
@@ -178,7 +180,7 @@
 
 							</div>
 						</div>
-					</div>
+					</form>
 				</div>
 		
 			</div>
