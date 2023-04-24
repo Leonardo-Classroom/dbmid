@@ -1,17 +1,6 @@
 <?php
-
-	// 取得使用者輸入的帳號和密碼
-	$username = $_POST['account'];
-	$password = $_POST['password'];
-
-	// 將密碼加密
-	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-	echo $hashed_password;
-
+    include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/chklogin/index.php';
 ?>
-
-
-
 
 <html>
   <head>
@@ -81,9 +70,9 @@
 		        <li class="nav-item">
 		          <a class="nav-link postloader" aria-current="page" href="/">首頁</a>
 		        </li>
-		        <li class="nav-item">
+		        <!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/login">登入</a>
-		        </li>
+		        </li> -->
 		        <!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/register">註冊</a>
 		        </li> -->
@@ -96,6 +85,11 @@
 		      </ul>
 
 		    </div>
+
+			<form class="d-flex m-0" action="/dbmid/login/logout.php">
+				<p class="m-0 font-white"></p>				
+				<button class="btn btn-outline-danger" type="submit">logout</button>
+			</form>
 		  </div>
 		</nav>
 

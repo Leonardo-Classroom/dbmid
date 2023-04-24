@@ -1,3 +1,11 @@
+<?php
+    // 檢查使用者是否已登入
+    session_start();
+    if (isset($_SESSION['account_id'])) {
+        header("Location: /dbmid/mycourse/");
+        exit();
+    }
+?>
 <html>
   <head>
 
@@ -67,9 +75,9 @@
 		        <!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/register">註冊</a>
 		        </li> -->
-				<li class="nav-item">
+				<!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
-		        </li>
+		        </li> -->
 		      </ul>
 
 		    </div>
@@ -95,12 +103,12 @@
 					<div class="bg-white rounded-30 p-3 bingShadow">
 
 						<h1 class="p-3 mb-2">登入</h1>
-		        <form action="/dbmid/mycourse/" method="post" class="m-0">
+		        <form action="/dbmid/login/login.php/" method="post" class="m-0">
 		          <div class="form-group mb-1">              
-		            <input type="text" class="form-control border-top-0 border-right-0 border-left-0 font-white bg-grey" placeholder="帳號" name="account">              
+		            <input type="text" class="form-control border-top-0 border-right-0 border-left-0 bg-grey" placeholder="帳號" name="account" required>              
 		          </div>
 		          <div class="form-group mb-5">              
-		            <input type="password" class="form-control border-top-0 border-right-0 border-left-0 font-white bg-grey" placeholder="密碼" name="password">
+		            <input type="password" class="form-control border-top-0 border-right-0 border-left-0 bg-grey" placeholder="密碼" name="password" required>
 		          </div>
 
 							<div class="d-flex justify-content-between mb-2">

@@ -60,15 +60,15 @@
 		        <li class="nav-item">
 		          <a class="nav-link postloader" aria-current="page" href="/">首頁</a>
 		        </li>
-		        <li class="nav-item">
+		        <!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/login">登入</a>
-		        </li>
+		        </li> -->
 		        <li class="nav-item">
 		          <a class="nav-link postloader active" href="/dbmid/register">註冊</a>
 		        </li>
-						<li class="nav-item">
+				<!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
-		        </li>
+		        </li> -->
 		      </ul>
 
 		    </div>

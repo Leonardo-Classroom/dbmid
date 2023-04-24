@@ -67,8 +67,11 @@
 		        <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/register">註冊</a>
 		        </li>
-						<li class="nav-item">
+				<li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
+		        </li>
+				<li class="nav-item">
+		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
 		        </li>
 		      </ul>
 
