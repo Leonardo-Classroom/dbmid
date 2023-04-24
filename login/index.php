@@ -97,7 +97,7 @@
 	      <div class="col-12 col-md-6 col-lg-5 font-black onePageHeightAndCenterVertically antiFlow">
 
 					<div class="d-flex justify-content-center w-100">
-						<img src="/asset/fculogo.png" class="img-fluid d-block d-md-none col-7 col-sm-6 mb-2">
+						<img src="/dbmid/asset/fculogo.png" class="img-fluid d-block d-md-none col-7 col-sm-6 mb-2">
 					</div>
 					
 					<div class="bg-white rounded-30 p-3 bingShadow">
