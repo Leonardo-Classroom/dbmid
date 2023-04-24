@@ -167,9 +167,9 @@
 										</div>
 										
 									</div>
-									<div class="col-12 col-md-6 mb-2" for="is_exclude">
-										<input class="py-1" type="checkbox" id="is_exclude" name="is_exclude">
-										<label class="py-1" for="is_exclude">過濾衝堂</label>
+									<div class="col-12 col-md-6 mb-2 d-flex align-items-center" for="is_exclude">
+										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude">
+										<label class="py-0 ps-1 pe-5" for="is_exclude">過濾衝堂</label>
 										<!-- <input type="text" class="col-12 py-1" id="" placeholder="科目名稱"> -->
 									</div>
 								</div>

@@ -1,7 +1,7 @@
 
 .chat_container {
 
-  position: absolute;
+  position: fixed!important;
   top: 160px;
   bottom: 0;
   margin: auto;
@@ -22,7 +22,7 @@
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) { 
 	.chat_container {
-	  position: absolute;
+	  position: fixed!important;
 	  top: 66px;
 	  bottom: 0;
 	  margin: auto;

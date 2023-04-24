@@ -19,9 +19,9 @@ $(document).ready(function() {
 	function bubbleMove(){
 		pos = $(".chat_container").offset();
 		if($(window).width()>=992){
-			$(".bubble").css("top", (pos.top+0) + "px").css("left", (pos.left+10) + "px").css("transition", "all 0.25s");
+			$(".bubble").css("top", (70	+0) + "px").css("left", (pos.left+10) + "px").css("transition", "all 0.25s");
 		}else{
-			$(".bubble").css("top", (pos.top - 90) + "px").css("left", (pos.left+10) + "px").css("transition", "all 0.25s");
+			$(".bubble").css("top", (70) + "px").css("left", (pos.left+10) + "px").css("transition", "all 0.25s");
 		}
 	}
 	
