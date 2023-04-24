@@ -384,28 +384,28 @@ p{
 
 
 .btn-primary{
-  color: #ffffff;
-  background-color: #7d212a;
-  border-color: #7d212a;
+  color: #ffffff!important;
+  background-color: #7d212a!important;
+  border-color: #7d212a!important;
 /*   border-radius: 0; */
 }
 .btn-primary:hover {
   color: #ffffff;
-  background-color: #7d212a;
-  border-color: #7d212a;
+  background-color: #7d212a!important;
+  border-color: #7d212a!important;
 }
 .btn-primary:active {
-  color: #ffffff;
-  background-color: #7d212a;
-  border-color: #7d212a;
+  color: #ffffff!important;
+  background-color: #7d212a!important;
+  border-color: #7d212a!important;
 }
-@media (min-width: 768px) { 
+/* @media (min-width: 768px) { 
   .btn-primary:hover{
-    color: #ffffff;
-    background-color: #7d212a;
-    border-color: #7d212a;
+    color: #ffffff!important;
+    background-color: #7d212a!important;
+    border-color: #7d212a!important;
   }  
-}
+} */
 
 
 .btn-outline-white-orange{
@@ -516,13 +516,17 @@ input[type='text'],input[type='email'],input[type='password'],select,.form-contr
   border-left: 0!important;
   border-top: 0!important;
   border-right: 0!important;
-
+  border-width: 1px;
+  border-color: #cccccc!important;
+}
+input[type='text'],input[type='email'],input[type='password'],.form-control{
+  color: #7d212a!important;
 }
 textarea:focus, input:focus,select:focus{
   border-color: #7d212a!important;
 }
 select{
-  color:#9e9e9e!important;
+  color:#cccccc!important;
 }
 
 

@@ -21,9 +21,9 @@
 
 	// 將密碼加密
 	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-	echo $username."<br>";
-	echo $password."<br>";
-	echo $hashed_password."<br>";
+	//echo $username."<br>";
+	//echo $password."<br>";
+	//echo $hashed_password."<br>";
 
 	// 建立資料庫連線
 	$servername = "localhost";
@@ -45,25 +45,25 @@
 	if (mysqli_num_rows($result) > 0) {
 		// 找到該使用者，比對密碼是否正確
 		$user = mysqli_fetch_assoc($result);
-		echo $user['password']."<br>";
+		//echo $user['password']."<br>";
 		if (password_verify($password, $user['password'])) {
             // 登入成功，儲存使用者資訊到 session 中
             session_start();
             $_SESSION['account_id'] = $user['account_id'];
             $_SESSION['account'] = $user['account'];
-			echo "Login successful"."<br>";
+			//echo "Login successful"."<br>";
             //echo "<script language='javascript'>window.location.href = '../../mycourse/'</script>";
             header("Location: "."/dbmid/mycourse/");
             exit;
 		} else {            
-			echo "Invalid password";
+			//echo "Invalid password";
             echo "<script language='javascript'>alert('Invalid password');</script>";
             echo "<script language='javascript'>window.location.href = '../'</script>";
             //header("Location: ".'/dbmid/login/');
             exit;
 	}
 	} else {
-	    echo "Invalid username";
+	    //echo "Invalid username";
         echo "<script language='javascript'>alert('Invalid username');</script>";
         echo "<script language='javascript'>window.location.href = '../'</script>";
         //header("Location: ".'/dbmid/login/');

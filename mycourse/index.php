@@ -83,13 +83,20 @@
 		          <a class="nav-link postloader active" href="/dbmid/mycourse">我的課表</a>
 		        </li>
 		      </ul>
-
+			  <ul class="d-flex justify-content-end m-0">
+			  	<li class="nav-item d-flex align-items-center">
+				  <p class="m-0 font-white pe-3">D1176454</p>
+		        </li>
+				<li class="nav-item">
+					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
+						<button class="btn btn-outline-danger" type="submit">logout</button>
+					</form>
+		        </li>
+			  
+			  </ul>
 		    </div>
 
-			<form class="d-flex m-0" action="/dbmid/login/logout.php">
-				<p class="m-0 font-white"></p>				
-				<button class="btn btn-outline-danger" type="submit">logout</button>
-			</form>
+			
 		  </div>
 		</nav>
 

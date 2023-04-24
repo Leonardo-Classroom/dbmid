@@ -20,8 +20,7 @@
 		<!--~bootstrap-->
 
 		<!--fontawesome-->
-		<script src="https://kit.fontawesome.com/d53abecaf1.js">
-		</script>
+		<script src="https://kit.fontawesome.com/4f410a4634.js" crossorigin="anonymous"></script>
 		<link href="https://kit-free.fontawesome.com/releases/latest/css/free-v4-shims.min.css" media="all" rel="stylesheet">
 		<link href="https://kit-free.fontawesome.com/releases/latest/css/free-v4-font-face.min.css" media="all" rel="stylesheet">
 		<link href="https://kit-free.fontawesome.com/releases/latest/css/free.min.css" media="all" rel="stylesheet">
@@ -83,13 +82,20 @@
 		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
 		        </li>
 		      </ul>
-
+			  <ul class="d-flex justify-content-end m-0">
+			  	<li class="nav-item d-flex align-items-center">
+				  <p class="m-0 font-white pe-3">D1176454</p>
+		        </li>
+				<li class="nav-item">
+					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
+						<button class="btn btn-outline-danger" type="submit">logout</button>
+					</form>
+		        </li>
+			  
+			  </ul>
 		    </div>
 
-			<form class="d-flex m-0" action="/dbmid/login/logout.php">
-				<p class="m-0 font-white"></p>				
-				<button class="btn btn-outline-danger" type="submit">logout</button>
-			</form>
+			
 
 		  </div>
 		</nav>
@@ -98,43 +104,78 @@
 			<div class="container">
 				<div class="d-flex justify-content-center w-100  ">
 					<div class="col-12 col-md-10 col-lg-8 bingShadow bg-white rounded-30 px-3" for="searchBox">
+
 						<div class="col">
 							<div class="row">
 								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
 								<div class="col px-0">
 									<input type="text" class="col-12 h-100 border-0 py-3" id="searchBox">
 								</div>
-								<div class="col-auto pe-0 ">
-									<select class="col-auto form-control border-0 py-3 px-2">
-										<option>星期</option>
-										<option>Mon</option>
-										<option>Tue</option>
-										<option>Wed</option>
-										<option>Thu</option>
-										<option>Fri</option>
-									</select>
+								
+								<div class="col-auto px-0 rounded-30 py-1">
+									<a class="btn btn-primary h-100 w-100 d-flex align-items-center rounded-30" data-bs-toggle="collapse" href="#filter" role="button" aria-expanded="false" aria-controls="filter">
+										<i class="fa-solid fa-filter"></i>
+									</a>
 								</div>
-								<div class="col-auto px-0 rounded-30">
-									<select class="col-auto form-control border-0 py-3 rounded-30 px-2">
-										<option>節</option>
-										<option>1th</option>
-										<option>2th</option>
-										<option>3th</option>
-										<option>4th</option>
-										<option>5th</option>
-										<option>6th</option>
-										<option>7th</option>
-										<option>8th</option>
-										<option>9th</option>
-										<option>10th</option>
-										<option>11th</option>
-										<option>12th</option>
-										<option>13th</option>
+								
+								
+							</div>
+						</div>
+
+
+						<div class="collapse pb-2" id="filter">
+							<div class="col">
+								<div class="row">
+									<div class="col-12 col-md-6 mb-2">
+										<input type="text" class="col-12 py-1" id="" placeholder="選課代號">
+									</div>
+									<div class="col-12 col-md-6 mb-2">
+										<input type="text" class="col-12 py-1" id="" placeholder="科目名稱">
+									</div>
+									<div class="col-12 col-md-6 mb-2">
+										<input type="text" class="col-12 py-1" id="" placeholder="開課教師姓名">
+									</div>
+									<div class="col-12 col-md-6 mb-2">
+										<div class="col">
+											<div class="row">
+												<div class="col-6">
+													<select class="col-auto form-control py-1 px-2">
+														<option>星期</option>
+														<option>Mon</option>
+														<option>Tue</option>
+														<option>Wed</option>
+														<option>Thu</option>
+														<option>Fri</option>
+													</select>
+												</div>
+												<div class="col-6">
+													<select class="col-auto form-control py-1 px-2">
+														<option>節</option>
+														<option>1th</option>
+														<option>2th</option>
+														<option>3th</option>
+														<option>4th</option>
+														<option>5th</option>
+														<option>6th</option>
+														<option>7th</option>
+														<option>8th</option>
+														<option>9th</option>
+														<option>10th</option>
+														<option>11th</option>
+														<option>12th</option>
+														<option>13th</option>
+													</select>
+												</div>
+											</div>
+										</div>
 										
-									</select>
+									</div>
 								</div>
+
 								
+
 								
+
 							</div>
 						</div>
 					</div>
