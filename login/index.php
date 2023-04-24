@@ -64,10 +64,10 @@
 		        <li class="nav-item">
 		          <a class="nav-link postloader active" href="/dbmid/login">登入</a>
 		        </li>
-		        <li class="nav-item">
+		        <!-- <li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/register">註冊</a>
-		        </li>
-						<li class="nav-item">
+		        </li> -->
+				<li class="nav-item">
 		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
 		        </li>
 		      </ul>
@@ -95,17 +95,17 @@
 					<div class="bg-white rounded-30 p-3 bingShadow">
 
 						<h1 class="p-3 mb-2">登入</h1>
-		        <form action="/missionAll" method="post" class="m-0">
+		        <form action="/dbmid/mycourse/" method="post" class="m-0">
 		          <div class="form-group mb-1">              
-		            <input type="text" class="form-control border-top-0 border-right-0 border-left-0 font-white bg-grey" placeholder="學號">              
+		            <input type="text" class="form-control border-top-0 border-right-0 border-left-0 font-white bg-grey" placeholder="帳號" name="account">              
 		          </div>
 		          <div class="form-group mb-5">              
-		            <input type="password" class="form-control border-top-0 border-right-0 border-left-0 font-white bg-grey" placeholder="密碼">
+		            <input type="password" class="form-control border-top-0 border-right-0 border-left-0 font-white bg-grey" placeholder="密碼" name="password">
 		          </div>
 
 							<div class="d-flex justify-content-between mb-2">
-								<a class="m-0" href="/register">註冊帳號</a>
-								<a class="m-0" href="/forgotPassword">忘記密碼</a>
+								<a class="m-0" href="">註冊帳號</a>
+								<a class="m-0" href="">忘記密碼</a>
 							</div>
 
 		

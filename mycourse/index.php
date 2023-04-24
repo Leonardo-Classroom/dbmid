@@ -1,3 +1,18 @@
+<?php
+
+	// 取得使用者輸入的帳號和密碼
+	$username = $_POST['account'];
+	$password = $_POST['password'];
+
+	// 將密碼加密
+	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+	echo $hashed_password;
+
+?>
+
+
+
+
 <html>
   <head>
 
@@ -67,16 +82,16 @@
 		          <a class="nav-link postloader" aria-current="page" href="/">首頁</a>
 		        </li>
 		        <li class="nav-item">
-		          <a class="nav-link postloader" href="/login">登入</a>
+		          <a class="nav-link postloader" href="/dbmid/login">登入</a>
 		        </li>
-		        <li class="nav-item">
-		          <a class="nav-link postloader" href="/register">註冊</a>
-		        </li>
+		        <!-- <li class="nav-item">
+		          <a class="nav-link postloader" href="/dbmid/register">註冊</a>
+		        </li> -->
 				<li class="nav-item">
-		          <a class="nav-link postloader" href="/course">選課</a>
+		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
 		        </li>
                 <li class="nav-item">
-		          <a class="nav-link postloader active" href="/mycourse">我的課表</a>
+		          <a class="nav-link postloader active" href="/dbmid/mycourse">我的課表</a>
 		        </li>
 		      </ul>
 
