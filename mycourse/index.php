@@ -587,7 +587,11 @@
 
 
         <!-- Modal -->
-        <div class="modal fade px-0" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade px-0" 
+			<?php 
+				echo "id='"."exampleModal"."'";
+			?> 
+		tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
             <div class="modal-content rounded-30">
               <div class="modal-header">
