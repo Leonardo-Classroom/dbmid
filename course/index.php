@@ -109,7 +109,7 @@
 							<div class="row">
 								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
 								<div class="col px-0">
-									<input type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="科目名稱">
+									<input type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="選課代號、科目名稱、教師姓名">
 								</div>
 								
 								<div class="col-auto px-0 rounded-30 py-1">
@@ -127,10 +127,13 @@
 							<div class="col rounded-30">
 								<div class="row rounded-30">
 									<div class="col-12 col-md-6 mb-2">
-										<input type="text" class="col-12 py-1" id="" placeholder="選課代號">
-									</div>
-									<div class="col-12 col-md-6 mb-2">
-										<input type="text" class="col-12 py-1" id="" placeholder="開課教師姓名">
+										<select class="col-auto form-control py-1 px-2">
+											<option>科系</option>
+											<option>資電學院</option>
+											<option>資訊系</option>
+											<option>電子系</option>
+											<option>電機系</option>
+										</select>
 									</div>
 									<div class="col-12 col-md-6 mb-2">
 										<div class="col">
