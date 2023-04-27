@@ -99,17 +99,119 @@
 
 		  </div>
 		</nav>
+				<?php
+			// Database connection details
+			$host = "localhost";
+			$username = "hj";
+			$password = "test1234";
+			$dbname = "dbmid";
 
+			// Connect to database
+			$conn = mysqli_connect($host, $username, $password, $dbname);
+
+			// Check connection
+			if (!$conn) {
+				die("Connection failed: " . mysqli_connect_error());
+			}
+
+			// Define variables for filters
+			$search_query = $department = $week = $time = "";
+
+			// Handle form submission
+			if ($_SERVER["REQUEST_METHOD"] == "POST") {
+				// Get filter values from form
+				$search_query = test_input($_POST["search_query"]);
+				$department = test_input($_POST["department"]);
+				$week = test_input($_POST["week"]);
+				$time = test_input($_POST["time"]);
+
+				// Build SQL query based on filters
+				$sql = "SELECT * FROM courses WHERE department LIKE '%$department%' AND week LIKE '%$week%' AND time LIKE '%$time%'";
+				if (!empty($search_query)) {
+					$sql .= " AND (course_name LIKE '%$search_query%' OR course_code LIKE '%$search_query%' OR teacher_name LIKE '%$search_query%')";
+				}
+		
+				// Execute query and get results
+				$result = mysqli_query($conn, $sql);
+				if (mysqli_num_rows($result) > 0) {
+					// Print results in a table
+					while ($row = mysqli_fetch_assoc($result)) {
+						echo '<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
+							<div class="col card mb-3 pt-2 px-2 pb-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+								
+								<div class="row pt-0 pb-0 px-3 mb-2 pt-1">
+									<div class="col-auto text-right px-0 m-0">          
+										<div class="h-100 d-flex align-items-end flex-column">
+											<h5 class="bi px-3 py-1 m-0">必</h5>
+										</div>
+									</div>
+									
+									<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
+										<h5 class="fw-bold ellipsis-1 m-0 ">
+											<span >$row["course_name"]$row["course_name"]$row["course_name"]</span>
+										</h5>
+									</div>			
+								</div>
+
+								<hr class="my-2">
+								
+								<div class="row pb-0 px-3 mb-2">
+									<div class="col text-left px-0 m-0">
+										<h5 class="fw-bold m-0">$row["teacher_name"]</h5>  
+									</div>
+									<div class="col-auto text-right px-0 m-0">           
+										<div class="h-100 d-flex align-items-center">
+											<h5 class="fw-bold  m-0">代碼&nbsp;<span>$row["course_code"]</span></h5>
+										</div>
+									</div>
+								</div>
+
+								<div class="row pb-0 px-3 mb-2">
+									<div class="col text-left px-0 m-0">
+										<h5 class="m-0">人數&nbsp;<span>60</span>/<span>70</span></h5>
+									</div>
+									<div class="col-auto text-right px-0 m-0">           
+										<div class="h-100 d-flex align-items-center">
+											<h5 class="m-0">學分&nbsp;<span>2</span></h5>
+										</div>
+									</div>
+								</div>
+
+								<hr class="my-2">
+								
+								<div class="row pb-0 px-3 mb-2">
+									<div class="col text-left px-0 m-0">
+										<div class="h-100 d-flex align-items-center">
+											<h5 class="m-0">$row["week"] $row["time"]</h5>
+										</div>
+									</div>
+									<div class="col-auto text-right px-0 m-0">           
+										<div class="h-100 d-flex align-items-center">
+											<h5 class="m-0">周五 1~4節</h5>
+										</div>
+									</div>
+								</div>	
+							</div>
+						</div>';	
+					}
+				} else {
+					echo "No results found.";
+				}
+			}
+
+			// Close database connection
+			mysqli_close($conn);
+		?>
 		<div class="bg-primary py-3 py-md-4 py-md-5 mb-3">
 			<div class="container">
 				<div class="d-flex justify-content-center w-100  ">
-					<form method="post" class="col-12 col-md-10 col-lg-8 bingShadow bg-white rounded-30 px-3" for="searchBox" action="search.php">
+					<form class="col-12 col-md-10 col-lg-8 bingShadow bg-white rounded-30 px-3" for="searchBox" action="">
 
 						<div class="col">
 							<div class="row">
 								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
 								<div class="col px-0">
-									<input name="search_query" type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="選課代號、科目名稱、教師姓名">
+									<input type="text" name ="search_query"class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="選課代號、科目名稱、教師姓名">
 								</div>
 								
 								<div class="col-auto px-0 rounded-30 py-1">
@@ -118,11 +220,9 @@
 									</a>
 								</div>
 								
-								
 							</div>
 						</div>
-
-
+						
 						<div class="collapse pb-2 rounded-30" id="filter">
 							<div class="col rounded-30">
 								<div class="row rounded-30">
