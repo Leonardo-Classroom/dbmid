@@ -2,6 +2,64 @@
     include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/chklogin/index.php';
 ?>
 
+
+
+<?php
+	// Database connection details
+	$host = "localhost";
+	$username = "hj";
+	$password = "test1234";
+	$dbname = "dbmid";
+
+	// Connect to database
+	$conn = mysqli_connect($host, $username, $password, $dbname);
+
+	// Check connection
+	if (!$conn) {
+		die("Connection failed: " . mysqli_connect_error());
+	}
+
+	
+	// Build SQL query based on filters
+	$sql = "
+		SELECT `student`.*, `class`.*
+		FROM `account`
+			, `student`
+			, `class`
+		WHERE `account`.`account_id` = `student`.`account_id` AND `class`.`class_id` = `student`.`class_id` AND `account`.`account_id`='$account_id';
+	";
+
+	// Execute query and get results
+	$result = mysqli_query($conn, $sql);
+
+
+	while($row = mysqli_fetch_array($result)){
+
+		$student_id=$row['student_id'];
+		$name=$row['name'];
+		$class_id=$row['class_id'];
+		$account_id=$row['account_id'];
+		$credit_min=$row['credit_min'];
+		$credit_max=$row['credit_max'];
+
+		$class_id=$row['class_id'];
+		$department_id=$row['department_id'];
+		$class_name=$row['class_name'];
+	
+	}
+
+
+	// continue
+
+
+
+
+
+	mysqli_close($conn);
+?>
+
+
+
 <html>
   <head>
 
@@ -85,7 +143,7 @@
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
-				  <p class="m-0 font-white pe-3">D1176454</p>
+				  <p class="m-0 font-white pe-3"><?php echo $class_name." ".$account." ".$name;?></p>
 		        </li>
 				<li class="nav-item">
 					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
