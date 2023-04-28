@@ -34,18 +34,64 @@
 							if($week=="星期"){
 								$week="";
 							}
+							else if($week=="Mon")
+							{
+								$week="一";
+							}
+							else if($week=="Tue")
+							{
+								$week="二" ;
+							}
+							else if($week=="Wed")
+							{
+								$week="三" ;
+							}
+							else if($week=="Thu")
+							{
+								$week="四" ;
+							}
+							else if($week=="Fri")
+							{
+								$week="五" ;
+							}
 							if($time=="節"){
 								$time="";
 							}
 							
 							// Build SQL query based on filters
-							$sql = "SELECT * FROM course WHERE department LIKE '%$department%' AND week LIKE '%$week%' AND time LIKE '%$time%'";
 							if (!empty($search_query)) {
-								$sql .= " AND (course_name LIKE '%$search_query%' OR course_code LIKE '%$search_query%' OR teacher_name LIKE '%$search_query%')";
+								$query = "SELECT * FROM course c
+										  JOIN section s ON c.course_id = s.course_id
+										  JOIN section_detail sd ON s.section_id = sd.section_id
+										  JOIN teacher t ON sd.teacher_id = t.teacher_id
+										  WHERE (c.course_name ='$search_query' OR s.course_id = '$search_query' OR t.name = '$search_query')";
+							} else {
+								$query = "SELECT * FROM course c
+										  JOIN section s ON c.course_id = s.course_id
+										  JOIN section_detail sd ON s.section_id = sd.section_id
+										  JOIN teacher t ON sd.teacher_id = t.teacher_id";
 							}
-							
+
+							// Filter by department
+							if (!empty($department)) {
+								$query .= " AND s.class_id IN (SELECT class_id FROM class WHERE department_id = '$department')";
+							}
+
+							// Filter by week
+							if (!empty($week)) {
+								$query .= " AND sd.week = '$week'";
+							}
+
+							// Filter by time
+							if (!empty($time)) {
+								// Check for no time collisions
+								$query .= " AND sd.time_start='$time'";
+							}
+													
 							// Execute query and get results
-							 $result = mysqli_query($conn, $sql);?>
+							 $result = mysqli_query($conn, $query);
+							 
+?>
 
 <html>
   <head>
@@ -247,19 +293,34 @@
 				<div class="row">
 
 							 <?php
-							 while ($row = mysqli_fetch_assoc($result)){
+							while ($row = mysqli_fetch_assoc($result)){
 							if (mysqli_num_rows($result) > 0) {
 								// Print results in a table?>
 								<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
 
-									<div class="col card mb-3 pt-2 px-2 pb-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+									<div class="col card mb-3 pt-2 px-2 pb-1" data-bs-toggle="modal" 
+										<?php
+											echo "data-bs-target='#Modal".$row['course_id']."'";
+										?>
+									>
 										
 										<div class="row pt-0 pb-0 px-3 mb-2 pt-1">
+										<?php if($row['isRequired']==1){
+										?>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-end flex-column">
 													<h5 class="bi px-3 py-1 m-0">必</h5>
 												</div>
 											</div>
+										<?php }
+										else{
+										?>
+											<div class="col-auto text-right px-0 m-0">           
+												<div class="h-100 d-flex align-items-end flex-column">
+													<h5 class="xuan px-3 py-1 m-0">選</h5>
+												</div>
+											</div>
+										<?php } ?>
 											
 											<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 												<h5 class="fw-bold ellipsis-1 m-0 ">
@@ -272,22 +333,22 @@
 										
 										<div class="row pb-0 px-3 mb-2">
 											<div class="col text-left px-0 m-0">
-												<h5 class="fw-bold m-0"><?php echo $row['teacher_name']; ?></h5>  
+												<h5 class="fw-bold m-0"><?php echo $row['name']; ?></h5>  
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="fw-bold  m-0">代碼&nbsp;<span><?php echo $row['course_code']; ?></span></h5>
+													<h5 class="fw-bold  m-0">代碼&nbsp;<span><?php echo $row['course_id']; ?></span></h5>
 												</div>
 											</div>
 										</div>
 
 										<div class="row pb-0 px-3 mb-2">
 											<div class="col text-left px-0 m-0">
-												<h5 class="m-0">人數&nbsp;<span>60</span>/<span>70</span></h5>
+												<h5 class="m-0">人數&nbsp;<span><?php echo $row['quota']; ?></span>/<span><?php echo $row['quota_max']; ?></span></h5>
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0">學分&nbsp;<span>2</span></h5>
+													<h5 class="m-0">學分&nbsp;<span><?php echo $row['credit']; ?></span></h5>
 												</div>
 											</div>
 										</div>
@@ -297,7 +358,12 @@
 										<div class="row pb-0 px-3 mb-2">
 											<div class="col text-left px-0 m-0">
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0"><?php echo $row['week'] . ' ' . $row['time']; ?></h5>
+													<h5 class="m-0">周<?php
+															if($row['time_start']==$row['time_end'])
+																echo $row['week'] . ' ' . $row['time_start']; 
+															else
+																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
+															?>節</h5>
 												</div>
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
@@ -309,7 +375,14 @@
 									</div>
 									
 								</div>
-								<div class="modal fade px-0" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<?php }
+								if (mysqli_num_rows($result) > 0){
+								?>
+								<div class="modal fade px-0"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" 
+									<?php
+												echo "id='Modal".$row['course_id']."'";
+									?>
+								>
 								  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
 									<div class="modal-content rounded-30">
 									  <div class="modal-header">
@@ -319,11 +392,22 @@
 									  <div class="modal-body">
 												
 										<div class="row pt-0 pb-0 px-2 mb-3 pt-1">
+													<?php if($row['isRequired']==1){
+													?>
 													<div class="col-auto text-right px-0 m-0">           
 														<div class="h-100 d-flex align-items-end flex-column">
 															<h5 class="bi px-3 py-1 m-0">必修</h5>
 														</div>
 													</div>
+													<?php }
+													else{
+													?>
+													<div class="col-auto text-right px-0 m-0">           
+														<div class="h-100 d-flex align-items-end flex-column">
+															<h5 class="xuan px-3 py-1 m-0">選修</h5>
+														</div>
+													</div>
+													<?php }?>
 													
 													<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 														<h5 class="fw-bold ellipsis-1 m-0 ps-2">
@@ -339,38 +423,43 @@
 														   
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">代碼</h5>							
-															<h5 class="m-0 w-50"><?php echo $row['course_code']; ?></h5>
+															<h5 class="m-0 w-50"><?php echo $row['course_id']; ?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">授課教師</h5>							
-															<h5 class="m-0 w-50"><?php echo $row['teacher_name']; ?></h5>
+															<h5 class="m-0 w-50"><?php echo $row['name']; ?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">學分</h5>							
-															<h5 class="m-0 w-50">2</h5>
+															<h5 class="m-0 w-50"><?php echo $row['credit']; ?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">實收名額</h5>							
-															<h5 class="m-0 w-50">60</h5>
+															<h5 class="m-0 w-50"><?php echo $row['quota']; ?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">開放名額</h5>							
-															<h5 class="m-0 w-50">70</h5>
+															<h5 class="m-0 w-50"><?php echo $row['quota_max']; ?></h5>
 														</div>
 
 
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
-															<h5 class="m-0 w-50"><?php echo $row['week'] . ' ' . $row['time']; ?></h5>
+															<h5 class="m-0 w-50">周<?php
+															if($row['time_start']==$row['time_end'])
+																echo $row['week'] . ' ' . $row['time_start']; 
+															else
+																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
+															?>節</h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">上課地點</h5>
-															<h5 class="m-0 w-50">科航204</h5>
+															<h5 class="m-0 w-50"><?php echo $row['location']; ?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between pb-2">
@@ -385,7 +474,7 @@
 
 														<div class="col h-100">
 															<h5 class="fw-bold m-0 pb-1">備註</h5>
-															<h5 class="m-0 w-100">2023/02/13~2023/04/13[第01~09周上課]</h5>
+															<h5 class="m-0 w-100"><?php echo $row['note']; ?></h5>
 														</div>
 														<div class="col w-100 d-flex justify-content-center pt-3">
 															<button class="btn btn-primary rounded-30 py-2 px-3" type="submit">加選</button>
@@ -398,9 +487,9 @@
 									</div>
 								  </div>
 								</div>
-
+								
 							<?php
-							} else {
+							}else {
 								echo "No results found.";
 							}
 							}
