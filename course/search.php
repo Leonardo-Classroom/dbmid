@@ -64,12 +64,14 @@
 										  JOIN section s ON c.course_id = s.course_id
 										  JOIN section_detail sd ON s.section_id = sd.section_id
 										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  WHERE (c.course_name ='$search_query' OR s.course_id = '$search_query' OR t.name = '$search_query')";
+										  JOIN class cl ON s.class_id=cl.class_id
+										  WHERE (c.course_name LIKE '%$search_query%' OR s.course_id LIKE '$search_query' OR t.name LIKE '$search_query')";
 							} else {
 								$query = "SELECT * FROM course c
 										  JOIN section s ON c.course_id = s.course_id
 										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id";
+										  JOIN teacher t ON sd.teacher_id = t.teacher_id
+										  JOIN class cl ON s.class_id=cl.class_id";
 							}
 
 							// Filter by department
@@ -90,6 +92,7 @@
 													
 							// Execute query and get results
 							 $result = mysqli_query($conn, $query);
+							 
 							 
 ?>
 
@@ -368,7 +371,7 @@
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0">周五 1~4節</h5>
+													<h5 class="m-0"></h5>
 												</div>
 											</div>
 										</div>   
@@ -430,6 +433,10 @@
 															<h5 class="fw-bold m-0 w-50">授課教師</h5>							
 															<h5 class="m-0 w-50"><?php echo $row['name']; ?></h5>
 														</div>
+														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+															<h5 class="fw-bold m-0 w-50">班級</h5>							
+															<h5 class="m-0 w-50"><?php echo $row['class_name']; ?></h5>
+														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">學分</h5>							
@@ -463,13 +470,13 @@
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between pb-2">
-															<h5 class="fw-bold m-0 w-50">上課時間</h5>
-															<h5 class="m-0 w-50">周五 1~4節</h5>	
+															<h5 class="fw-bold m-0 w-50"></h5>
+															<h5 class="m-0 w-50"></h5>	
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-															<h5 class="fw-bold m-0 w-50">上課地點</h5>
-															<h5 class="m-0 w-50">資電234</h5>
+															<h5 class="fw-bold m-0 w-50"></h5>
+															<h5 class="m-0 w-50"></h5>
 														</div>
 
 														<div class="col h-100">
