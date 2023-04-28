@@ -64,7 +64,7 @@
 										  JOIN section s ON c.course_id = s.course_id
 										  JOIN section_detail sd ON s.section_id = sd.section_id
 										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  WHERE (c.course_name LIKE '%$search_query%' OR s.course_id LIKE '$search_query' OR t.name LIKE '%$search_query%')";
+										  WHERE (c.course_name ='$search_query' OR s.course_id = '$search_query' OR t.name = '$search_query')";
 							} else {
 								$query = "SELECT * FROM course c
 										  JOIN section s ON c.course_id = s.course_id
@@ -298,14 +298,29 @@
 								// Print results in a table?>
 								<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
 
-									<div class="col card mb-3 pt-2 px-2 pb-1" data-bs-toggle="modal" data-bs-target="#exampleModal">
+									<div class="col card mb-3 pt-2 px-2 pb-1" data-bs-toggle="modal" 
+										<?php
+											echo "data-bs-target='#Modal".$row['course_id']."'";
+										?>
+									>
 										
 										<div class="row pt-0 pb-0 px-3 mb-2 pt-1">
+										<?php if($row['isRequired']==1){
+										?>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-end flex-column">
 													<h5 class="bi px-3 py-1 m-0">必</h5>
 												</div>
 											</div>
+										<?php }
+										else{
+										?>
+											<div class="col-auto text-right px-0 m-0">           
+												<div class="h-100 d-flex align-items-end flex-column">
+													<h5 class="xuan px-3 py-1 m-0">選</h5>
+												</div>
+											</div>
+										<?php } ?>
 											
 											<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 												<h5 class="fw-bold ellipsis-1 m-0 ">
@@ -360,7 +375,14 @@
 									</div>
 									
 								</div>
-								<div class="modal fade px-0" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<?php }
+								if (mysqli_num_rows($result) > 0){
+								?>
+								<div class="modal fade px-0"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" 
+									<?php
+												echo "id='Modal".$row['course_id']."'";
+									?>
+								>
 								  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
 									<div class="modal-content rounded-30">
 									  <div class="modal-header">
@@ -370,11 +392,22 @@
 									  <div class="modal-body">
 												
 										<div class="row pt-0 pb-0 px-2 mb-3 pt-1">
+													<?php if($row['isRequired']==1){
+													?>
 													<div class="col-auto text-right px-0 m-0">           
 														<div class="h-100 d-flex align-items-end flex-column">
 															<h5 class="bi px-3 py-1 m-0">必修</h5>
 														</div>
 													</div>
+													<?php }
+													else{
+													?>
+													<div class="col-auto text-right px-0 m-0">           
+														<div class="h-100 d-flex align-items-end flex-column">
+															<h5 class="xuan px-3 py-1 m-0">選修</h5>
+														</div>
+													</div>
+													<?php }?>
 													
 													<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 														<h5 class="fw-bold ellipsis-1 m-0 ps-2">
@@ -454,9 +487,9 @@
 									</div>
 								  </div>
 								</div>
-
+								
 							<?php
-							} else {
+							}else {
 								echo "No results found.";
 							}
 							}
