@@ -27,6 +27,9 @@
 							$department =($_POST["department"]);
 							$week =($_POST["week"]);
 							$time =($_POST["time"]);
+							if(isset($_POST['is_exclude'])){
+								$is_exclude=($_POST["is_exclude"]);
+							}
 							
 							if($department=="科系"){
 								$department="";
@@ -89,6 +92,17 @@
 								// Check for no time collisions
 								$query .= " AND sd.time_start='$time'";
 							}
+							
+							/* if (!empty($is_exclude)) {
+							// Check for no time collisions
+									$query .= " AND NOT EXISTS (SELECT * FROM section_detail sd2
+                                     JOIN section s2 ON sd2.section_id = s2.section_id
+                                     WHERE s2.class_id = s.class_id
+                                     AND sd2.week = '$week'
+                                     AND ((sd2.time_start <= '$time' AND sd2.time_end > '$time')
+                                     OR ('$time' <= sd2.time_end AND '$time' > sd2.time_start)))";
+							}*/
+    }
 													
 							// Execute query and get results
 							 $result = mysqli_query($conn, $query);
@@ -265,7 +279,7 @@
 										
 									</div>
 									<div class="col-12 col-md-6 mb-2 d-flex align-items-center" for="is_exclude">
-										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude">
+										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude>
 										<label class="py-0 ps-1 pe-5" for="is_exclude">過濾衝堂</label>
 										<!-- <input type="text" class="col-12 py-1" id="" placeholder="科目名稱"> -->
 									</div>
