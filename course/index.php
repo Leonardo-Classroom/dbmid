@@ -217,22 +217,14 @@
 						}
 
 							// Build SQL query based on filters
-							if (!empty($search_query)) {
-								$query = "SELECT * FROM course c
-										  JOIN section s ON c.course_id = s.course_id
-										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  JOIN class cl ON s.class_id=clclass_id
-										  JOIN department d on cl.department_id=d.department_id
-										  WHERE (c.course_name LIKE '%$search_query%' OR s.course_id LIKE '$search_query' OR t.name LIKE '$search_query')";
-							} else {
+							
 								$query = "SELECT * FROM course c
 										  JOIN section s ON c.course_id = s.course_id
 										  JOIN section_detail sd ON s.section_id = sd.section_id
 										  JOIN teacher t ON sd.teacher_id = t.teacher_id
 										  JOIN class cl ON s.class_id=cl.class_id
 										  JOIN department d on cl.department_id=d.department_id";
-							}
+							
 							 $result = mysqli_query($conn, $query);
 							while ($row = mysqli_fetch_assoc($result)){
 							if (mysqli_num_rows($result) > 0&&$row['department_id']==57) {
