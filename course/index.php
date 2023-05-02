@@ -107,7 +107,8 @@
 
 						<div class="col">
 							<div class="row">
-								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
+								<input class="img-fluid col-auto" type="image" src="/dbmid/asset/search.svg" alt="Submit">
+								<!-- <img src="/dbmid/asset/search.svg" class="img-fluid col-auto"> -->
 								<div class="col px-0">
 									<input name="search_query" type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="選課代號、科目名稱、教師姓名">
 								</div>
