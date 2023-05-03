@@ -33,6 +33,32 @@
 		die("Connection failed: " . mysqli_connect_error());
 	}
 
+    $student_department_id=0;
+    $student_department_name=0;
+    $student_class_id=0;
+    $student_class_name=0;
+    $student_name="";
+    $student_account="";
+    // search student's class and department
+	$sql = "
+        SELECT `student`.`student_id`,`account`.`account`,`name` AS 'student_name',`department`.*,`class`.`class_id`,`class`.`class_name`
+        FROM `student` 
+        LEFT JOIN `class` ON `student`.`class_id`=`class`.`class_id`
+        LEFT JOIN `department` ON `class`.`department_id`=`department`.`department_id`
+        LEFT JOIN `account` ON `student`.`account_id`=`account`.`account_id`
+        WHERE `student`.`student_id`=".$student_id.";    
+    ";
+
+    $result = mysqli_query($conn, $sql);
+    while($row = mysqli_fetch_array($result)){
+        $student_department_id=$row['department_id'];
+        $student_department_name=$row['department_name'];
+        $student_class_id=$row['class_id'];
+        $student_class_name=$row['class_name'];
+        $student_name=$row['student_name'];
+        $student_account=$row['account'];
+	}
+
 	
 	// Build SQL query based on filters
 	$sql = "
@@ -65,6 +91,7 @@
     $credit=[];
     $isRequired=[];
 
+    $credit_sum=0;
 	while($row = mysqli_fetch_array($result)){
 
         array_push($section_student_id, $row['section_student_id']);
@@ -84,7 +111,7 @@
         array_push($credit, $row['credit']);
         array_push($isRequired, $row['isRequired']);
         		        
-		
+		$credit_sum+=$row['credit'];
 	}
 
 	
@@ -281,12 +308,7 @@
 		        <li class="nav-item">
                     <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">檢索</a>
 		        </li>
-				<li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
-		        </li>
-                <li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
-		        </li>
+				
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
@@ -318,8 +340,44 @@
             	<div class="col px-2">
 
 
+                    <div class="0">
+                        <span>
+                            <a href="/dbmid/admin/">
+                                /所有科系
+                            </a>
+                            <a
+                                <?php
+                                    echo "href='/dbmid/admin/classes.php?department_id=".$student_department_id."'";
+                                ?>
+                            >
+                                <?php
+                                    echo "/".$student_department_name."系";
+                                ?>
+                            </a>
+                            <a
+                                <?php
+                                    echo "href='/dbmid/admin/students.php?class_id=".$student_class_id."'";
+                                ?>
+                            >
+                                <?php
+                                    echo "/".$student_class_name;
+                                ?>
+                            </a>
 
-                    <p class="m-0">當前學分：16/30</p>
+                            <a
+                                <?php
+                                    echo "href='/dbmid/admin/course.php?student_id=".$student_id."'";
+                                ?>
+                            >
+                                <?php
+                                    echo "/".$student_name.">";
+                                ?>
+                            </a>
+
+                            <span class="m-0">當前學分：<?php echo $credit_sum;?>/30</span>
+                        </span>
+                    </div>
+                    
                     
             		<div class="row bg-light-grey font-white roundRT roundLT">
             			
@@ -434,25 +492,25 @@
         <?php
             for($i=0;$i<count($section_student_id);$i++){
 
-                echo $section_student_id[$i].",";
-                echo $section_id[$i].",";
-                echo $is_withdrawable[$i].",";
-                echo $is_valid[$i].",";
-                echo "<br><br>";
+                // echo $section_student_id[$i].",";
+                // echo $section_id[$i].",";
+                // echo $is_withdrawable[$i].",";
+                // echo $is_valid[$i].",";
+                // echo "<br><br>";
         
-                echo $class_id[$i].",";
-                echo $course_id[$i].",";
-                echo $quota[$i].",";
-                echo $quota_max[$i].",";
-                echo $year[$i].",";
-                echo $semester[$i].",";
-                echo $note[$i].",";
-                echo "<br><br>";
+                // echo $class_id[$i].",";
+                // echo $course_id[$i].",";
+                // echo $quota[$i].",";
+                // echo $quota_max[$i].",";
+                // echo $year[$i].",";
+                // echo $semester[$i].",";
+                // echo $note[$i].",";
+                // echo "<br><br>";
         
-                echo $course_name[$i].",";
-                echo $credit[$i].",";
-                echo $isRequired[$i].",";
-                echo "<br>----------------------------<br>";
+                // echo $course_name[$i].",";
+                // echo $credit[$i].",";
+                // echo $isRequired[$i].",";
+                // echo "<br>----------------------------<br>";
             
         ?>      
 

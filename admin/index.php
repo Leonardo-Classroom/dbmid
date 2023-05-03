@@ -117,12 +117,7 @@
 		        <li class="nav-item">
                     <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">檢索</a>
 		        </li>
-				<li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
-		        </li>
-                <li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
-		        </li>
+				
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
@@ -146,6 +141,11 @@
 
         <div class="container">
 
+			<div class="my-3">
+				<a href="/dbmid/admin/">
+					/所有科系>
+				</a>
+			</div>
             <?php
                 for($i=0;$i<count($department_id);$i++){                    
             ?>

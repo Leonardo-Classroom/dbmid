@@ -125,12 +125,7 @@
 		        <li class="nav-item">
 		          <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">檢索</a>
 		        </li>
-				<li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
-		        </li>
-                <li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
-		        </li>
+				
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
@@ -154,20 +149,38 @@
 
         <div class="container">
 
+			<div class="my-3">
+				<span>
+					<a href="/dbmid/admin/">
+						/所有科系
+					</a>
+					<a
+						<?php
+							echo "href='/dbmid/admin/classes.php?department_id=".$department_id[0]."'";
+						?>
+					>
+						<?php
+							echo "/".$department_name[0]."系>";
+						?>
+					</a>
+				</span>
+			</div>
+			
+
             <?php
                 for($i=0;$i<count($class_id);$i++){                    
             ?>
-                    
-                    <a
-                        <?php
-                            echo "href='/dbmid/admin/students.php?class_id=".$class_id[$i]."'";
-                        ?>
-                    >
-                        <?php
-                            echo $class_name[$i];
-                        ?>
-                    </a>
-                    <br>
+                    <div class="mb-2">
+						<a
+							<?php
+								echo "href='/dbmid/admin/students.php?class_id=".$class_id[$i]."'";
+							?>
+						>
+							<?php
+								echo $class_name[$i];
+							?>
+						</a>
+                    </div>
 
             <?php
                 }

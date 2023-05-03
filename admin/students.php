@@ -26,10 +26,12 @@
 	
 	// Build SQL query based on filters
 	$sql = "
-        SELECT `student`.* ,`account`.`account`
-        FROM `student` 
-        LEFT JOIN `account` ON `student`.`account_id`=`account`.`account_id`
-        WHERE `class_id` = ".$_GET["class_id"].";
+		SELECT `student`.* ,`account`.`account` ,`department`.`department_id`,`department`.`department_name`,`class`.`class_name`
+		FROM `student` 
+		LEFT JOIN `account` ON `student`.`account_id`=`account`.`account_id` 
+		LEFT JOIN `class` ON `student`.`class_id`=`class`.`class_id`
+		LEFT JOIN `department` on `class`.`department_id`=`department`.`department_id`
+		WHERE `student`.`class_id` = ".$_GET["class_id"].";
 	";
 
 	// Execute query and get results
@@ -44,6 +46,10 @@
     
     $account=[];
 
+	$department_id=[];
+	$department_name=[];
+	$class_name=[];
+
 	while($row = mysqli_fetch_array($result)){
 
         array_push($student_id, $row['student_id']);
@@ -54,6 +60,10 @@
         array_push($credit_max, $row['credit_max']);   
                     
         array_push($account, $row['account']);   
+
+		array_push($department_id, $row['department_id']);
+		array_push($department_name, $row['department_name']);
+		array_push($class_name, $row['class_name']);
 		
 	}
 
@@ -131,12 +141,7 @@
 		        <li class="nav-item">
 		          <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">檢索</a>
 		        </li>
-				<li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/course">選課</a>
-		        </li>
-                <li class="nav-item">
-		          <a class="nav-link postloader" href="/dbmid/mycourse">我的課表</a>
-		        </li>
+				
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
@@ -158,6 +163,32 @@
 
 
         <div class="container">
+
+			<div class="my-3">
+				<span>
+					<a href="/dbmid/admin/">
+						/所有科系
+					</a>
+					<a
+						<?php
+							echo "href='/dbmid/admin/classes.php?department_id=".$department_id[0]."'";
+						?>
+					>
+						<?php
+							echo "/".$department_name[0]."系";
+						?>
+					</a>
+					<a
+						<?php
+							echo "href='/dbmid/admin/students.php?class_id=".$class_id[0]."'";
+						?>
+					>
+						<?php
+							echo "/".$class_name[0].">";
+						?>
+					</a>
+				</span>
+			</div>
 
             <?php
                 for($i=0;$i<count($class_id);$i++){                    
