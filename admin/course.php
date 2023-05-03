@@ -86,15 +86,6 @@
         		        
 		
 	}
-    // for($i=0;$i<count($section_student_id);$i++){
-    //     echo $section_student_id[$i].",";
-    //     echo $section_id[$i].",";
-    //     echo $is_withdrawable[$i].",";
-    //     echo $is_valid[$i].",";
-    //     echo "<br><br>";
-    // }
-
-    // echo "------<br>";
 
 	
 
@@ -127,39 +118,25 @@
         }
     }
 
-    // for($i=0;$i<13;$i++){
-    //     for($j=0;$j<5;$j++){            
-    //         echo $table[$i][$j]["section_student_id"]." ";
-    //     }
-    //     echo "<br>";
-    // }
+
 
     for($i=0;$i<count($section_student_id);$i++){
-        // echo $section_student_id[$i].",";
-        // echo $section_id[$i].",";
-        // echo $is_withdrawable[$i].",";
-        // echo $is_valid[$i].",";
-        // echo "<br><br>";
+        $section_detail[$section_id[$i]]["teacher_id"]=[];
+        $section_detail[$section_id[$i]]["week"]=[];
+        $section_detail[$section_id[$i]]["time_start"]=[];
+        $section_detail[$section_id[$i]]["time_end"]=[];
+        $section_detail[$section_id[$i]]["location"]=[];
 
-        // echo $class_id[$i].",";
-        // echo $course_id[$i].",";
-        // echo $quota[$i].",";
-        // echo $quota_max[$i].",";
-        // echo $year[$i].",";
-        // echo $semester[$i].",";
-        // echo $note[$i].",";
-        // echo "<br><br>";
+        $section_detail[$section_id[$i]]["teacher_name"]=[];
+       
+    }
+    for($i=0;$i<count($section_student_id);$i++){
 
-        // echo $course_name[$i].",";
-        // echo $credit[$i].",";
-        // echo $isRequired[$i].",";
-        // echo "<br><br>";
-        
-        // echo "<br>---------------------------------------<br>";
 
         $sql = "
-            SELECT * 
+            SELECT `section_detail`.* ,`teacher`.`name` as 'teacher_name'
             FROM `section_detail` 
+            LEFT JOIN `teacher` ON `section_detail`.`teacher_id`=`teacher`.`teacher_id`
             WHERE `section_id` = ".$section_id[$i].";
         ";
 
@@ -175,17 +152,13 @@
             $tmp_time_end=$row['time_end'];
             $tmp_location=$row['location'];
 
-
-// echo $tmp_section_detail_id.",";
-// echo $tmp_section_id.",";
-// echo $tmp_teacher_id.",";
-// echo $tmp_week.",";
-// echo $tmp_time_start.",";
-// echo $tmp_time_end.",";
-// echo $tmp_location.",";
-// echo "<br>";
+            $tmp_teacher_name=$row['teacher_name'];     
 
 
+
+            
+
+            $chk_section_detail_id=0;
             for($j=$tmp_time_start-1;$j<$tmp_time_end;$j++){
                 
                 $table[$j][$dateDict[$tmp_week]]["section_student_id"]=$section_student_id[$i];
@@ -212,11 +185,33 @@
                 $table[$j][$dateDict[$tmp_week]]["time_start"]=$tmp_time_start;
                 $table[$j][$dateDict[$tmp_week]]["time_end"]=$tmp_time_end;
                 $table[$j][$dateDict[$tmp_week]]["location"]=$tmp_location;
-            }   
-            
+
+                $table[$j][$dateDict[$tmp_week]]["teacher_name"]=$tmp_teacher_name;
+
+                
+                for($k=0;$k<count($section_student_id);$k++){
+                    if($section_id[$k]==$table[$j][$dateDict[$tmp_week]]["section_id"] && $chk_section_detail_id!=$table[$j][$dateDict[$tmp_week]]["section_detail_id"]){
+                        array_push($section_detail[$section_id[$k]]["teacher_id"], $table[$j][$dateDict[$tmp_week]]["teacher_id"]);
+                        array_push($section_detail[$section_id[$k]]["week"], $table[$j][$dateDict[$tmp_week]]["week"]);
+                        array_push($section_detail[$section_id[$k]]["time_start"], $table[$j][$dateDict[$tmp_week]]["time_start"]);
+                        array_push($section_detail[$section_id[$k]]["time_end"], $table[$j][$dateDict[$tmp_week]]["time_end"]);
+                        array_push($section_detail[$section_id[$k]]["location"], $table[$j][$dateDict[$tmp_week]]["location"]);
+
+                        array_push($section_detail[$section_id[$k]]["teacher_name"], $table[$j][$dateDict[$tmp_week]]["teacher_name"]);
+
+                        $chk_section_detail_id=$table[$j][$dateDict[$tmp_week]]["section_detail_id"];
+
+                        break;
+                    }
+                }
+            }
+  
         }
 
     }
+
+      
+    
 
 ?>
 
@@ -263,7 +258,7 @@
 
   </head>
   <body class="">
-    <?php
+        <?php
 			include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/preloader/index.php';
 		?>
 		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -356,9 +351,7 @@
 
                     <?php
                         for($i=0;$i<13;$i++){
-                    ?>
-
-                    
+                    ?>                 
             
                             <div class="row">
                     
@@ -384,7 +377,7 @@
                                         <div 
                                             <?php
                                                 if($table[$i][$j]["section_id"]!=0){
-                                                    if($table[$i][$j]["isRequired"]==1){
+                                                    if($table[$i][$j]["is_withdrawable"]==0){
                                                         echo "class='col border f-height centerVertically px-1 bi-table'";
                                                     }else{
                                                         echo "class='col border f-height centerVertically px-1 xuan-table'";
@@ -394,7 +387,7 @@
                                                 }else{
                                                     echo "class='col border f-height centerVertically px-1'";
                                                 }
-                                                
+                                                echo 'data-bs-toggle="modal" data-bs-target="#modal'.$table[$i][$j]["section_id"].'"';
                                             ?>
                                         >
                                             <p class="m-0 p-0 form-ellipsis ">
@@ -437,103 +430,153 @@
 
 
         <!-- Modal -->
-        <div class="modal fade px-0" 
-			<?php 
-				echo "id='"."exampleModal"."'";
-			?> 
-		tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
-            <div class="modal-content rounded-30">
-              <div class="modal-header">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-        				
-                <div class="row pt-0 pb-0 px-2 mb-3 pt-1">
-        					<div class="col-auto text-right px-0 m-0">           
-        						<div class="h-100 d-flex align-items-end flex-column">
-        							<h5 class="bi px-3 py-1 m-0">必修</h5>
-        						</div>
-        					</div>
-        					
-        					<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
-        						<h5 class="fw-bold ellipsis-1 m-0 ps-2">
-        							<span >程式設計III程式設計III程式設計III</span>
-        						</h5>
-        					</div>			
-        				</div>
-        
-        				
-        				
-        				<div class="pt-0 pb-0 px-2 mb-2 pt-1">
-        		
-        					       
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">代碼</h5>							
-        							<h5 class="m-0 w-50">1211</h5>
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">授課教師</h5>							
-        							<h5 class="m-0 w-50">何霆鋒</h5>
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">學分</h5>							
-        							<h5 class="m-0 w-50">2</h5>
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">實收名額</h5>							
-        							<h5 class="m-0 w-50">60</h5>
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">開放名額</h5>							
-        							<h5 class="m-0 w-50">70</h5>
-        						</div>
-        
-        
-        						<div class="col h-100 d-flex justify-content-between pb-2">
-        							<h5 class="fw-bold m-0 w-50">上課時間</h5>
-        							<h5 class="m-0 w-50">周四 3~4節</h5>
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">上課地點</h5>
-        							<h5 class="m-0 w-50">科航204</h5>
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between pb-2">
-        							<h5 class="fw-bold m-0 w-50">上課時間</h5>
-        							<h5 class="m-0 w-50">周五 1~4節</h5>	
-        						</div>
-        
-        						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-        							<h5 class="fw-bold m-0 w-50">上課地點</h5>
-        							<h5 class="m-0 w-50">資電234</h5>
-        						</div>
-        
-        						<div class="col h-100">
-        							<h5 class="fw-bold m-0 pb-1">備註</h5>
-        							<h5 class="m-0 w-100">2023/02/13~2023/04/13[第01~09周上課]</h5>
-        						</div>
 
-                                <div class="col w-100 d-flex justify-content-center pt-3">
-        							<button class="btn btn-primary rounded-30 py-2 px-3" type="submit">退選</button>
-        						</div>
-        					
-        				</div>
-        				
-              </div>
-              
-            </div>
-          </div>
-        </div>
+        <?php
+            for($i=0;$i<count($section_student_id);$i++){
+
+                echo $section_student_id[$i].",";
+                echo $section_id[$i].",";
+                echo $is_withdrawable[$i].",";
+                echo $is_valid[$i].",";
+                echo "<br><br>";
         
+                echo $class_id[$i].",";
+                echo $course_id[$i].",";
+                echo $quota[$i].",";
+                echo $quota_max[$i].",";
+                echo $year[$i].",";
+                echo $semester[$i].",";
+                echo $note[$i].",";
+                echo "<br><br>";
+        
+                echo $course_name[$i].",";
+                echo $credit[$i].",";
+                echo $isRequired[$i].",";
+                echo "<br>----------------------------<br>";
+            
+        ?>      
+
+                <div class="modal fade px-0" 
+                    <?php echo "id='modal".$section_id[$i]."'"; ?>
+                    tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+                        <div class="modal-content rounded-30">
+                        <div class="modal-header">
+                            <h5 class="modal-title"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                                    
+                            <div class="row pt-0 pb-0 px-2 mb-3 pt-1">
+                                        <div class="col-auto text-right px-0 m-0">           
+                                            <div class="h-100 d-flex align-items-end flex-column">
+                                                
+                                                <?php 
+                                                    if($isRequired[$i]==1){
+                                                        echo '<h5 class="bi px-3 py-1 m-0">必</h5>'; 
+                                                    }else{
+                                                        echo '<h5 class="xuan px-3 py-1 m-0">選</h5>'; 
+                                                    }
+                                                    
+                                                ?> 
+                                                
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
+                                            <h5 class="fw-bold ellipsis-1 m-0 ps-2">
+                                                <span><?php echo $course_name[$i]; ?></span>
+                                            </h5>
+                                        </div>			
+                                    </div>
+                    
+                                    
+                                    
+                                    <div class="pt-0 pb-0 px-2 mb-2 pt-1">
+                            
+                                            
+                                            <div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+                                                <h5 class="fw-bold m-0 w-50">代碼</h5>							
+                                                <h5 class="m-0 w-50"><?php echo $section_id[$i]; ?></h5>
+                                            </div>
+                    
+                                            <div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+                                                <h5 class="fw-bold m-0 w-50">授課教師</h5>
+                                                <h5 class="m-0 w-50">
+                                                    <?php
+                                                        echo $section_detail[$section_id[$i]]["teacher_name"][0];
+                                                    ?>
+                                                </h5>				
+                                            </div>
+                    
+                                            <div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+                                                <h5 class="fw-bold m-0 w-50">學分</h5>							
+                                                <h5 class="m-0 w-50"><?php echo $credit[$i]; ?></h5>
+                                            </div>
+                    
+                                            <div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+                                                <h5 class="fw-bold m-0 w-50">實收名額</h5>							
+                                                <h5 class="m-0 w-50"><?php echo $quota[$i]; ?></h5>
+                                            </div>
+                    
+                                            <div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+                                                <h5 class="fw-bold m-0 w-50">開放名額</h5>							
+                                                <h5 class="m-0 w-50"><?php echo $quota_max[$i]; ?></h5>
+                                            </div>
+                    
+                                            <?php
+                                                for($j=0;$j<count($section_detail[$section_id[$i]]["teacher_id"]);$j++){
+                                            ?>
+                                                    
+                                                    <div class="col h-100 d-flex justify-content-between pb-2">
+                                                        <h5 class="fw-bold m-0 w-50">上課時間</h5>
+                                                        <h5 class="m-0 w-50">
+                                                            <?php 
+                                                                echo "周".$section_detail[$section_id[$i]]["week"][$j]." ";
+                                                                echo $section_detail[$section_id[$i]]["time_start"][$j]."~";
+                                                                echo $section_detail[$section_id[$i]]["time_end"][$j]."節";
+                                                            ?>
+                                                        </h5>
+                                                    </div>
+                            
+                                                    <div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+                                                        <h5 class="fw-bold m-0 w-50">上課地點</h5>
+                                                        
+                                                        <h5 class="m-0 w-50">
+                                                            <?php 
+                                                                echo $section_detail[$section_id[$i]]["location"][$j];
+                                                            ?>
+                                                        </h5>
+                                                    </div>
+
+                                            <?php       
+                                                }
+                                            ?>	
 
 
+                    
+                                            
+                    
+                                            <div class="col h-100">
+                                                <h5 class="fw-bold m-0 pb-1">備註</h5>
+                                                <h5 class="m-0 w-100"><?php echo $note[$i]; ?></h5>
+                                            </div>
+
+                                            <div class="col w-100 d-flex justify-content-center pt-3">
+                                                <button class="btn btn-primary rounded-30 py-2 px-3" type="submit">退選</button>
+                                            </div>
+                                        
+                                    </div>
+                                    
+                        </div>
+                        
+                        </div>
+                    </div>
+                </div>
+        
+        <?php
+            }
+        ?>   
 
 
 
