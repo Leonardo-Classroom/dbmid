@@ -1,5 +1,9 @@
 <?php
     include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/chklogin/index.php';
+	if($admin_id!=0){
+        header("Location: /dbmid/admin");
+        exit();
+    }
 ?>
 
 <?php
