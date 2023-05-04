@@ -230,6 +230,7 @@
 										  JOIN class cl ON s.class_id=cl.class_id
 										  JOIN department d on cl.department_id=d.department_id
 										  where d.department_id=57
+										  limit 30
 										";
 							
 							 $result = mysqli_query($conn, $query);
