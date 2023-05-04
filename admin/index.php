@@ -146,7 +146,13 @@
 					/所有科系>
 				</a>
 			</div>
-            <?php
+
+			<form method="POST" action="/dbmid/admin/search.php">
+				<input type="text" placeholder="學生帳號" name="student_account">
+				<input type="submit" value="查詢">
+			</form>
+            
+			<?php
                 for($i=0;$i<count($department_id);$i++){                    
             ?>
                     
