@@ -115,10 +115,10 @@
 		    <div class="collapse navbar-collapse" id="navbarToggler">
 		      <ul class="navbar-nav me-auto mb-0 mb-lg-0">
 			  	<li class="nav-item">
-                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">學生檢索</a>
+                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin">學生檢索</a>
 		        </li>
 				<li class="nav-item">
-                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
+                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
 		        </li>
 				
 		      </ul>
@@ -145,13 +145,13 @@
         <div class="container">
 
 			<div class="my-3">
-				<a href="/dbmid/admin/">
+				<a href="/dbmid/admin/course_index.php">
 					/所有科系>
 				</a>
 			</div>
 
-			<form method="POST" action="/dbmid/admin/search.php">
-				<input type="text" placeholder="學生帳號" name="student_account">
+			<form method="POST" action="/dbmid/admin/search_course.php">
+				<input type="text" placeholder="課程ID" name="course_id">
 				<input type="submit" value="查詢">
 			</form>
             
@@ -161,7 +161,7 @@
                     
                     <a
                         <?php
-                            echo "href='/dbmid/admin/classes.php?department_id=".$department_id[$i]."'";
+                            echo "href='/dbmid/admin/course_department.php?department_id=".$department_id[$i]."'";
                         ?>
                     >
                         <?php

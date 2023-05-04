@@ -305,8 +305,11 @@
 				
 		    <div class="collapse navbar-collapse" id="navbarToggler">
 		      <ul class="navbar-nav me-auto mb-0 mb-lg-0">
-		        <li class="nav-item">
-                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">檢索</a>
+                <li class="nav-item">
+                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">學生檢索</a>
+		        </li>
+				<li class="nav-item">
+                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
 		        </li>
 				
 		      </ul>

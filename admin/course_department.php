@@ -26,20 +26,32 @@
 	
 	// Build SQL query based on filters
 	$sql = "
-        SELECT * FROM 
-        `department` 
-        WHERE `department_id` = 57
+        SELECT `course`.`course_name`,`section`.`section_id`,`department`.`department_id`,`department`.`department_name`,`class`.`class_name`
+        FROM `section`
+        LEFT JOIN `course` ON `section`.`course_id`=`course`.`course_id`
+        LEFT JOIN `class` ON `section`.`class_id`=`class`.`class_id`
+        LEFT JOIN `department` ON `class`.`department_id`=`department`.`department_id`
+        WHERE `department`.`department_id`=".$_GET["department_id"].";
 	";
 
 	// Execute query and get results
 	$result = mysqli_query($conn, $sql);
 
+    
+    $course_name=[];
+    $section_id=[];
     $department_id=[];
     $department_name=[];
+    $class_name=[];
+
 	while($row = mysqli_fetch_array($result)){
 
+        array_push($course_name, $row['course_name']);
+        array_push($section_id, $row['section_id']);
         array_push($department_id, $row['department_id']);
-        array_push($department_name, $row['department_name']);		        
+        array_push($department_name, $row['department_name']);
+        array_push($class_name, $row['class_name']);
+        
 		
 	}
 
@@ -115,10 +127,10 @@
 		    <div class="collapse navbar-collapse" id="navbarToggler">
 		      <ul class="navbar-nav me-auto mb-0 mb-lg-0">
 			  	<li class="nav-item">
-                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">學生檢索</a>
+                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin">學生檢索</a>
 		        </li>
 				<li class="nav-item">
-                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
+                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
 		        </li>
 				
 		      </ul>
@@ -144,30 +156,37 @@
 
         <div class="container">
 
-			<div class="my-3">
-				<a href="/dbmid/admin/">
-					/所有科系>
-				</a>
+            <div class="my-3">
+				<span>
+					<a href="/dbmid/admin/course_index.php">
+						/所有科系
+					</a>
+					<a
+						<?php
+							echo "href='/dbmid/admin/course_department.php?department_id=".$department_id[0]."'";
+						?>
+					>
+						<?php
+							echo "/".$department_name[0]."系>";
+						?>
+					</a>
+				</span>
 			</div>
-
-			<form method="POST" action="/dbmid/admin/search.php">
-				<input type="text" placeholder="學生帳號" name="student_account">
-				<input type="submit" value="查詢">
-			</form>
             
-			<?php
-                for($i=0;$i<count($department_id);$i++){                    
+            <?php
+                for($i=0;$i<count($section_id);$i++){                    
             ?>
-                    
-                    <a
-                        <?php
-                            echo "href='/dbmid/admin/classes.php?department_id=".$department_id[$i]."'";
-                        ?>
-                    >
-                        <?php
-                            echo $department_name[$i]."系";
-                        ?>
-                    </a>
+                    <div class="mb-2">
+                        <a
+                            <?php
+                                echo "href='/dbmid/admin/course_students.php?section_id=".$section_id[$i]."'";
+                            ?>
+                        >
+                            <?php
+                                echo $class_name[$i]." ".$course_name[$i];
+                            ?>
+                        </a>
+                    </div>
 
             <?php
                 }
