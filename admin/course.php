@@ -621,7 +621,11 @@
                                             </div>
 
                                             <div class="col w-100 d-flex justify-content-center pt-3">
-                                                <button class="btn btn-primary rounded-30 py-2 px-3" type="submit">退選</button>
+                                                <a class="btn btn-primary rounded-30 py-2 px-3"
+                                                    <?php
+                                                        echo "href='/dbmid/admin/withdraw.php?section_id=".$section_id[$i]."&student_id=".$student_id."'";
+                                                    ?>
+                                                >退選</a>
                                             </div>
                                         
                                     </div>
