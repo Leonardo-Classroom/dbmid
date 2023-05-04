@@ -228,11 +228,14 @@
 										  JOIN section_detail sd ON s.section_id = sd.section_id
 										  JOIN teacher t ON sd.teacher_id = t.teacher_id
 										  JOIN class cl ON s.class_id=cl.class_id
-										  JOIN department d on cl.department_id=d.department_id";
+										  JOIN department d on cl.department_id=d.department_id
+										  where d.department_id=57
+										  limit 30
+										";
 							
 							 $result = mysqli_query($conn, $query);
 							while ($row = mysqli_fetch_assoc($result)){
-							if (mysqli_num_rows($result) > 0&&$row['department_id']==57) {
+							if (mysqli_num_rows($result) > 0) {
 								// Print results in a table?>
 								<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
 
