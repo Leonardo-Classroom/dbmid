@@ -114,15 +114,21 @@
 							
 							 if (!empty($is_exclude)) {
 							// Check for no time collisions
-									$query .= "AND NOT EXISTS (SELECT * FROM section_detail sd2
-                                     JOIN section s2 ON sd2.section_id = s2.section_id
-									 JOIN section_student ss ON sd2.section_id=ss.section_id
-									 JOIN student st ON st.student_id=ss.student_id
-									 JOIN account acc ON acc.account_id=st.account_id
-                                     WHERE s2.class_id = s.class_id
-                                     AND sd2.week = '$week'
-                                     AND ((sd2.time_start <= '$time' AND sd2.time_end > '$time')
-                                     OR ('$time' <= sd2.time_end AND '$time' > sd2.time_start)))";
+									/*$query .= "AND course_id NOT IN (
+												  SELECT DISTINCT c.course_id
+												  FROM course c 
+												  JOIN section s ON c.course_id = s.course_id 
+												  JOIN section_detail sd ON s.section_id = sd.section_id 
+												  JOIN student_section ss ON s.section_id = ss.section_id 
+												  JOIN student st ON ss.student_id = st.student_id 
+												  WHERE st.student_id = <STUDENT_ID> 
+												  AND CONCAT('周', sd.week, ' ', sd.time_start, '-', sd.time_end, '節') IN (
+													SELECT CONCAT('周', sd.week, ' ', sd.time_start, '-', sd.time_end, '節')
+													FROM student_section ss
+													JOIN section s ON ss.section_id = s.section_id 
+													JOIN section_detail sd ON s.section_id = sd.section_id 
+													WHERE ss.student_id = <STUDENT_ID>
+												  ))";*/
 							}
     }
 													
