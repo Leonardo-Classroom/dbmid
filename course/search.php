@@ -18,12 +18,14 @@
 						}
 
 						// Define variables for filters
-						$search_query = $department = $week = $time = "";
-
+						$search_query = $department = $week = $time = $scode = $namecourse = "";
+						
 						// Handle form submission
 						if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							// Get filter values from form
-							$search_query = ($_POST["search_query"]);
+							$search_query=($_POST["search_query"]);
+							
+							
 							$department =($_POST["department"]);
 							$week =($_POST["week"]);
 							$time =($_POST["time"]);
@@ -60,26 +62,39 @@
 							if($time=="節"){
 								$time="";
 							}
-							
+	
 							// Build SQL query based on filters
 							if (!empty($search_query)) {
-								$query = "SELECT * FROM course c
-										  JOIN section s ON c.course_id = s.course_id
-										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  JOIN class cl ON s.class_id=cl.class_id
-										  WHERE (c.course_name='$search_query' OR s.course_id='$search_query' OR t.name='$search_query')";
+								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id 
+											 WHERE (s.course_id = '$search_query'  OR c.course_name like '%$search_query%' OR t.name like '%$search_query%')) AS subquery 
+											 GROUP BY course_id, course_name
+											 ";
 							} else {
-								$query = "SELECT * FROM course c
-										  JOIN section s ON c.course_id = s.course_id
-										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  JOIN class cl ON s.class_id=cl.class_id";
+								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id) AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
+							
 
 							// Filter by department
 							if (!empty($department)) {
-								$query .= " AND s.class_id IN (SELECT class_id FROM class WHERE department_id = '$department')";
+								$query .= " AND s.class_id IN (SELECT class_id FROM class WHERE department_name = '$department')";
 							}
 
 							// Filter by week
@@ -90,22 +105,28 @@
 							// Filter by time
 							if (!empty($time)) {
 								// Check for no time collisions
-								$query .= " AND sd.time_start='$time'";
+								$query .= " AND sd.time_start = '$time'";
 							}
 							
-							/* if (!empty($is_exclude)) {
+							 if (!empty($is_exclude)) {
 							// Check for no time collisions
-									$query .= " AND NOT EXISTS (SELECT * FROM section_detail sd2
+									$query .= "AND NOT EXISTS (SELECT * FROM section_detail sd2
                                      JOIN section s2 ON sd2.section_id = s2.section_id
+									 JOIN section_student ss ON sd2.section_id=ss.section_id
+									 JOIN student st ON st.student_id=ss.student_id
+									 JOIN account acc ON acc.account_id=st.account_id
                                      WHERE s2.class_id = s.class_id
                                      AND sd2.week = '$week'
                                      AND ((sd2.time_start <= '$time' AND sd2.time_end > '$time')
                                      OR ('$time' <= sd2.time_end AND '$time' > sd2.time_start)))";
-							}*/
+							}
     }
 													
 							// Execute query and get results
 							 $result = mysqli_query($conn, $query);
+							 if (!$result) {
+    trigger_error(mysqli_error($conn), E_USER_ERROR);
+}
 							 
 							 
 ?>
@@ -238,9 +259,9 @@
 										<select name="department" class="col-auto form-control py-1 px-2">
 											<option>科系</option>
 											<option>資電學院</option>
-											<option>資訊系</option>
-											<option>電子系</option>
-											<option>電機系</option>
+											<option>資訊</option>
+											<option>電子</option>
+											<option>電機</option>
 										</select>
 									</div>
 									<div class="col-12 col-md-6 mb-2">
@@ -279,7 +300,7 @@
 										
 									</div>
 									<div class="col-12 col-md-6 mb-2 d-flex align-items-center" for="is_exclude">
-										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude>
+										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude">
 										<label class="py-0 ps-1 pe-5" for="is_exclude">過濾衝堂</label>
 										<!-- <input type="text" class="col-12 py-1" id="" placeholder="科目名稱"> -->
 									</div>
@@ -341,7 +362,7 @@
 											
 											<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 												<h5 class="fw-bold ellipsis-1 m-0 ">
-													<span><?php echo $row['course_name'] .' '. $row['course_name'] .' '. $row['course_name']; ?></span>
+													<span><?php echo $row['course_name']; ?></span>
 												</h5>
 											</div>          
 										</div>
@@ -375,17 +396,41 @@
 										<div class="row pb-0 px-3 mb-2">
 											<div class="col text-left px-0 m-0">
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0">周<?php
-															if($row['time_start']==$row['time_end'])
-																echo $row['week'] . ' ' . $row['time_start']; 
-															else
-																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
-															?>節</h5>
+													<h5 class="m-0"><?php
+																$n=0;
+																$str=$row['times'];
+																$delim='o';
+																$words= explode($delim,$str);
+																foreach($words as $word)
+																{
+																	if($n==0){
+																		sscanf($word, "周%s %d-%d節", $day,$time_str, $time_end);
+																		if($time_str==$time_end){
+																			echo "周".$day." ".$time_str."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day." ".$time_str."-".$time_end."節";
+																			$n=$n+1;
+																		}
+																	}
+																	else{
+																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
+																		if($time_str1==$time_end1){
+																			echo "周".$day1." ".$time_str1."節";
+																		}
+																		else{
+																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																		}
+																	}
+															?></h5>
 												</div>
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0"></h5>
+													<h5 class="m-0"><?php
+														}
+													?></h5>
 												</div>
 											</div>
 										</div>   
@@ -428,7 +473,7 @@
 													
 													<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 														<h5 class="fw-bold ellipsis-1 m-0 ps-2">
-															<span ><?php echo $row['course_name'] .' '. $row['course_name'] .' '. $row['course_name']; ?></span>
+															<span ><?php echo $row['course_name']; ?></span>
 														</h5>
 													</div>			
 												</div>
@@ -470,20 +515,83 @@
 
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
-															<h5 class="m-0 w-50">周<?php
-															if($row['time_start']==$row['time_end'])
-																echo $row['week'] . ' ' . $row['time_start']; 
-															else
-																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
-															?>節</h5>
+															<h5 class="m-0 w-50"><?php
+																$str=$row['times'];
+																$delim='o';
+																$words= explode($delim,$str);
+																foreach($words as $word)
+																{
+																	if($n==0){
+																		sscanf($word, "周%s %d-%d節", $day,$time_str, $time_end);
+																		if($time_str==$time_end){
+																			echo "周".$day." ".$time_str."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day." ".$time_str."-".$time_end."節";
+																			$n=$n+1;
+																		}
+																	}
+																	else{
+																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
+																		if($time_str1==$time_end1){
+																			echo "周".$day1." ".$time_str1."節";
+																		}
+																		else{
+																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																		}
+																	}
+																echo "<br>";
+																}
+															?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">上課地點</h5>
-															<h5 class="m-0 w-50"><?php echo $row['location']; ?></h5>
+															<h5 class="m-0 w-50"><?php
+																$str2=$row['locations'];
+																$flag=0;
+																for($l=0;$l<strlen($str2);$l++)
+																{
+																	if($str2[$l]=='o')
+																	{
+																		$flag=1;
+																	}
+																}
+																if($flag==1)
+																{
+																	$delim='o';
+																	$words2= explode($delim,$str2);
+																	foreach($words2 as $word2)
+																	{
+																	$i=0;
+																	if($i==0){
+																		$loc=$word2;
+																		echo $word2;
+																		$i=$i+1;
+																		}
+																	else if($i==1){
+																		if($word2="")
+																		{
+																			echo $loc;
+																		}
+																		else{
+																			echo $word2;
+																		}
+																	}
+																	echo "<br>";
+																	}
+																}
+																else
+																{
+																	echo $str2;
+																	echo "<br>";
+																	echo $str2;
+																}
+															?></h5>
 														</div>
 
-														<div class="col h-100 d-flex justify-content-between pb-2">
+														<!--<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50"></h5>
 															<h5 class="m-0 w-50"></h5>	
 														</div>
@@ -491,7 +599,7 @@
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50"></h5>
 															<h5 class="m-0 w-50"></h5>
-														</div>
+														</div>-->
 
 														<div class="col h-100">
 															<h5 class="fw-bold m-0 pb-1">備註</h5>
