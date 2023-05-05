@@ -6,8 +6,6 @@ if ($admin_id != 0) {
 }
 ?>
 
-
-
 <?php
 // Database connection details
 $host = "localhost";
@@ -32,7 +30,6 @@ $sql = "
 			, `class`
 		WHERE `account`.`account_id` = `student`.`account_id` AND `class`.`class_id` = `student`.`class_id` AND `account`.`account_id`='$account_id';
 	";
-
 // Execute query and get results
 $result = mysqli_query($conn, $sql);
 
@@ -54,14 +51,44 @@ while ($row = mysqli_fetch_array($result)) {
 
 
 // continue
+$sql = "
+		SELECT 
+			`course`.`course_name`, 
+			`course`.`isRequired`, 
+			`section_detail`.`section_id`, 
+			`teacher`.`name`, `course`.`credit`, 
+			`section`.`quota`, `section`.`quota_max`, 
+			`section_detail`.`week`, 
+			`section_detail`.`time_start`, 
+			`section_detail`.`time_end`, 
+			`section_detail`.`location`, 
+			`section`.`note`
+		FROM 
+			`student`, 
+			`section`, 
+			`section_detail`, 
+			`section_student`, 
+			`course`, `teacher`, 
+			`account`
+		WHERE 
+			`section_student`.`student_id` = `student`.`student_id` 
+			AND `section`.`section_id` = `section_student`.`section_id` 
+			AND `section`.`section_id` = `section_detail`.`section_id` 
+			AND `course`.`course_id` = `section`.`course_id` 
+			AND `teacher`.`teacher_id` = `section_detail`.`teacher_id` 
+			AND `student`.`account_id` = `account`.`account_id` 
+			AND `account`.`account` = '$account';
+";
 
+$result = mysqli_query($conn, $sql);
+while ($row = mysqli_fetch_array($result)) {
+	// echo $row[0];
+	// echo $row[2];
 
-
-
+}
 
 mysqli_close($conn);
 ?>
-
 
 
 <html>
@@ -97,8 +124,7 @@ mysqli_close($conn);
 	<!--fontawesome-->
 
 	<link href="/dbmid/main.css" rel="stylesheet" type="text/css" />
-	<script src="/dbmid/main.js">
-	</script>
+	<script src="/dbmid/main.js">	</script>
 
 	<link href="main.css" rel="stylesheet" type="text/css" />
 	<script src="main.js">
