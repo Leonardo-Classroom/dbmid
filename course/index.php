@@ -135,9 +135,9 @@
 										<select name="department" class="col-auto form-control py-1 px-2">
 											<option>科系</option>
 											<option>資電學院</option>
-											<option>資訊系</option>
-											<option>電子系</option>
-											<option>電機系</option>
+											<option>資訊</option>
+											<option>電子</option>
+											<option>電機</option>
 										</select>
 									</div>
 									<div class="col-12 col-md-6 mb-2">
@@ -223,19 +223,25 @@
 
 							// Build SQL query based on filters
 							
-								$query = "SELECT * FROM course c
-										  JOIN section s ON c.course_id = s.course_id
-										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  JOIN class cl ON s.class_id=cl.class_id
-										  JOIN department d on cl.department_id=d.department_id
-										  where d.department_id=57
-										  limit 30
-										";
+
+								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name,department_id, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location,d.department_id, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id) AS subquery 
+											 GROUP BY course_id, course_name
+											";
+
+
+
 							
 							 $result = mysqli_query($conn, $query);
 							while ($row = mysqli_fetch_assoc($result)){
-							if (mysqli_num_rows($result) > 0) {
+							if (mysqli_num_rows($result) > 0&& $row['department_id']==57) {
 								// Print results in a table?>
 								<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
 
@@ -265,7 +271,7 @@
 											
 											<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 												<h5 class="fw-bold ellipsis-1 m-0 ">
-													<span><?php echo $row['course_name'] .' '. $row['course_name'] .' '. $row['course_name']; ?></span>
+													<span><?php echo $row['course_name']; ?></span>
 												</h5>
 											</div>          
 										</div>
@@ -299,17 +305,41 @@
 										<div class="row pb-0 px-3 mb-2">
 											<div class="col text-left px-0 m-0">
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0">周<?php
-															if($row['time_start']==$row['time_end'])
-																echo $row['week'] . ' ' . $row['time_start']; 
-															else
-																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
-															?>節</h5>
+													<h5 class="m-0"><?php
+																$n=0;
+																$str=$row['times'];
+																$delim='o';
+																$words= explode($delim,$str);
+																foreach($words as $word)
+																{
+																	if($n==0){
+																		sscanf($word, "周%s %d-%d節", $day,$time_str, $time_end);
+																		if($time_str==$time_end){
+																			echo "周".$day." ".$time_str."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day." ".$time_str."-".$time_end."節";
+																			$n=$n+1;
+																		}
+																	}
+																	else{
+																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
+																		if($time_str1==$time_end1){
+																			echo "周".$day1." ".$time_str1."節";
+																		}
+																		else{
+																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																		}
+																	}
+															?></h5>
 												</div>
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0"></h5>
+													<h5 class="m-0"><?php
+														}
+													?></h5>
 												</div>
 											</div>
 										</div>   
@@ -352,7 +382,7 @@
 													
 													<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 														<h5 class="fw-bold ellipsis-1 m-0 ps-2">
-															<span ><?php echo $row['course_name'] .' '. $row['course_name'] .' '. $row['course_name']; ?></span>
+															<span ><?php echo $row['course_name']; ?></span>
 														</h5>
 													</div>			
 												</div>
@@ -394,20 +424,85 @@
 
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
-															<h5 class="m-0 w-50">周<?php
-															if($row['time_start']==$row['time_end'])
-																echo $row['week'] . ' ' . $row['time_start']; 
-															else
-																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
-															?>節</h5>
+															<h5 class="m-0 w-50"><?php
+																$n=0;
+																$str=$row['times'];
+																$delim='o';
+																$words= explode($delim,$str);
+																foreach($words as $word)
+																{
+																	if($n==0){
+																		sscanf($word, "周%s %d-%d節", $day,$time_str, $time_end);
+																		if($time_str==$time_end){
+																			echo "周".$day." ".$time_str."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day." ".$time_str."-".$time_end."節";
+																			$n=$n+1;
+																		}
+																		echo "<br>";
+																	}
+																	else{
+																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
+																		if($time_str1==$time_end1){
+																			echo "周".$day1." ".$time_str1."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																			$n=$n+1;
+																		}
+																	}
+																}
+															?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">上課地點</h5>
-															<h5 class="m-0 w-50"><?php echo $row['location']; ?></h5>
+															<h5 class="m-0 w-50"><?php
+																$str2=$row['locations'];
+																$flag=0;
+																$i=0;
+																for($l=0;$l<strlen($str2);$l++)
+																{
+																	if($str2[$l]=='o')
+																	{
+																		$flag=1;
+																		break;
+																	}
+																}
+																if($flag==1)
+																{
+																	$i=0;
+																	$delim='o';
+																	$words2= explode($delim,$str2);
+																	foreach($words2 as $word2)
+																	{
+																	if($i==0){
+																		echo $word2;
+																		$i=$i+1;
+																		}
+																	else if($i==1){
+																			echo $word2;
+																	}
+																	echo "<br>";
+																	}
+																}
+																else if($flag==0&&$n==2)
+																{
+																	echo $str2;
+																	echo "<br>";
+																	echo $str2;
+																}
+																else
+																{
+																	echo $str2;
+																}
+															?></h5>
 														</div>
 
-														<div class="col h-100 d-flex justify-content-between pb-2">
+														<!--<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50"></h5>
 															<h5 class="m-0 w-50"></h5>	
 														</div>
@@ -415,7 +510,7 @@
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50"></h5>
 															<h5 class="m-0 w-50"></h5>
-														</div>
+														</div>-->
 
 														<div class="col h-100">
 															<h5 class="fw-bold m-0 pb-1">備註</h5>
