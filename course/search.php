@@ -525,7 +525,7 @@
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
 															<h5 class="m-0 w-50"><?php
-															$n=0;
+																$n=0;
 																$str=$row['times'];
 																$delim='o';
 																$words= explode($delim,$str);
@@ -568,33 +568,28 @@
 																	if($str2[$l]=='o')
 																	{
 																		$flag=1;
+																		break;
 																	}
 																}
+																
 																if($flag==1)
 																{
+																	$i=0;
 																	$delim='o';
 																	$words2= explode($delim,$str2);
 																	foreach($words2 as $word2)
 																	{
-																	$i=0;
 																	if($i==0){
-																		$loc=$word2;
 																		echo $word2;
 																		$i=$i+1;
 																		}
 																	else if($i==1){
-																		if($word2="")
-																		{
-																			echo $loc;
-																		}
-																		else{
 																			echo $word2;
-																		}
 																	}
 																	echo "<br>";
 																	}
 																}
-																else if($i==1&&$n==2)
+																else if($flag==0&&$n==2)
 																{
 																	echo $str2;
 																	echo "<br>";
