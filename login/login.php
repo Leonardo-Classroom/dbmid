@@ -39,21 +39,45 @@
 	}
 
 	// 從資料庫中取得使用者資訊
-	$sql = "SELECT * FROM account WHERE account='$username'";
+	$sql = "SELECT `account`.*,`admin`.`admin_id`,`admin`.`admin_name` 
+			FROM `account` 
+			LEFT JOIN `admin` ON `account`.`account_id`=`admin`.`account_id`
+			WHERE `account`.`account`='$username';
+			";
 	$result = mysqli_query($conn, $sql);
 
 	if (mysqli_num_rows($result) > 0) {
 		// 找到該使用者，比對密碼是否正確
 		$user = mysqli_fetch_assoc($result);
-		//echo $user['password']."<br>";
+		//echo $user['password']."<br>";	
 		if (password_verify($password, $user['password'])) {
             // 登入成功，儲存使用者資訊到 session 中
+
+			if($user['is_banned']==1){
+				echo "<script language='javascript'>alert('YOU ARE BANNED!!');</script>";
+        		echo "<script language='javascript'>window.location.href = '../'</script>";	
+				exit;			
+			}
+
+			
+			
             session_start();
             $_SESSION['account_id'] = $user['account_id'];
             $_SESSION['account'] = $user['account'];
-			//echo "Login successful"."<br>";
-            //echo "<script language='javascript'>window.location.href = '../../mycourse/'</script>";
-            header("Location: "."/dbmid/mycourse/");
+
+			$_SESSION['admin_id']=0;
+			if($user['admin_id']!=NULL){
+				$_SESSION['admin_id'] = $user['admin_id'];
+			}
+			
+			if($_SESSION['admin_id']!=0){
+				header("Location: "."/dbmid/admin/");
+				// echo "is admin";
+			}else{
+				header("Location: "."/dbmid/mycourse/");
+				// echo "is student";
+			}
+
             exit;
 		} else {            
 			//echo "Invalid password";

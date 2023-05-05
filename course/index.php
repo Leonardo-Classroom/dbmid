@@ -1,5 +1,9 @@
 <?php
     include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/chklogin/index.php';
+	if($admin_id!=0){
+        header("Location: /dbmid/admin");
+        exit();
+    }
 ?>
 
 <html>
@@ -107,7 +111,8 @@
 
 						<div class="col">
 							<div class="row">
-								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
+								<input class="img-fluid col-auto" type="image" src="/dbmid/asset/search.svg" alt="Submit">
+								<!-- <img src="/dbmid/asset/search.svg" class="img-fluid col-auto"> -->
 								<div class="col px-0">
 									<input name="search_query" type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="選課代號、科目名稱、教師姓名">
 								</div>
@@ -218,6 +223,7 @@
 
 							// Build SQL query based on filters
 							
+
 								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name,department_id, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
 											FROM 
 											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location,d.department_id, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
@@ -229,10 +235,21 @@
 											 JOIN department d on cl.department_id=d.department_id) AS subquery 
 											 GROUP BY course_id, course_name
 											";
+
+								/*$query = "SELECT * FROM course c
+										  JOIN section s ON c.course_id = s.course_id
+										  JOIN section_detail sd ON s.section_id = sd.section_id
+										  JOIN teacher t ON sd.teacher_id = t.teacher_id
+										  JOIN class cl ON s.class_id=cl.class_id
+										  JOIN department d on cl.department_id=d.department_id
+										  where d.department_id=57
+										  limit 30
+										";*/
+
 							
 							 $result = mysqli_query($conn, $query);
 							while ($row = mysqli_fetch_assoc($result)){
-							if (mysqli_num_rows($result) > 0&&$row['department_id']==57) {
+							if (mysqli_num_rows($result) > 0&& $row['department_id']==57) {
 								// Print results in a table?>
 								<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
 
@@ -416,7 +433,8 @@
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
 															<h5 class="m-0 w-50"><?php
-															$str=$row['times'];
+															$n=0;
+																$str=$row['times'];
 																$delim='o';
 																$words= explode($delim,$str);
 																foreach($words as $word)
@@ -431,17 +449,19 @@
 																			echo "周".$day." ".$time_str."-".$time_end."節";
 																			$n=$n+1;
 																		}
+																		echo "<br>";
 																	}
 																	else{
 																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
 																		if($time_str1==$time_end1){
 																			echo "周".$day1." ".$time_str1."節";
+																			$n=$n+1;
 																		}
 																		else{
 																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																			$n=$n+1;
 																		}
 																	}
-																echo "<br>";
 																}
 															?></h5>
 														</div>
@@ -482,10 +502,14 @@
 																	echo "<br>";
 																	}
 																}
-																else
+																else if($i==1&&$n==2)
 																{
 																	echo $str2;
 																	echo "<br>";
+																	echo $str2;
+																}
+																else
+																{
 																	echo $str2;
 																}
 															?></h5>

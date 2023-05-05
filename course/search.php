@@ -1,5 +1,9 @@
 <?php
     include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/chklogin/index.php';
+	if($admin_id!=0){
+        header("Location: /dbmid/admin");
+        exit();
+    }
 ?>
 
 <?php
@@ -236,7 +240,8 @@
 
 						<div class="col">
 							<div class="row">
-								<img src="/dbmid/asset/search.svg" class="img-fluid col-auto">
+								<input class="img-fluid col-auto" type="image" src="/dbmid/asset/search.svg" alt="Submit">
+								<!-- <img src="/dbmid/asset/search.svg" class="img-fluid col-auto"> -->
 								<div class="col px-0">
 									<input name="search_query" type="text" class="col-12 h-100 border-0 py-3" id="searchBox" placeholder="選課代號、科目名稱、教師姓名">
 								</div>
@@ -300,7 +305,11 @@
 										
 									</div>
 									<div class="col-12 col-md-6 mb-2 d-flex align-items-center" for="is_exclude">
+
 										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude">
+
+										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude">										
+
 										<label class="py-0 ps-1 pe-5" for="is_exclude">過濾衝堂</label>
 										<!-- <input type="text" class="col-12 py-1" id="" placeholder="科目名稱"> -->
 									</div>
@@ -516,6 +525,7 @@
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
 															<h5 class="m-0 w-50"><?php
+															$n=0;
 																$str=$row['times'];
 																$delim='o';
 																$words= explode($delim,$str);
@@ -531,17 +541,19 @@
 																			echo "周".$day." ".$time_str."-".$time_end."節";
 																			$n=$n+1;
 																		}
+																		echo "<br>";
 																	}
 																	else{
 																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
 																		if($time_str1==$time_end1){
 																			echo "周".$day1." ".$time_str1."節";
+																			$n=$n+1;
 																		}
 																		else{
 																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																			$n=$n+1;
 																		}
 																	}
-																echo "<br>";
 																}
 															?></h5>
 														</div>
@@ -582,10 +594,14 @@
 																	echo "<br>";
 																	}
 																}
-																else
+																else if($i==1&&$n==2)
 																{
 																	echo $str2;
 																	echo "<br>";
+																	echo $str2;
+																}
+																else
+																{
 																	echo $str2;
 																}
 															?></h5>
@@ -616,9 +632,9 @@
 									</div>
 								  </div>
 								</div>
-								
+
 							<?php
-							}else {
+							} else {
 								echo "No results found.";
 							}
 							}
