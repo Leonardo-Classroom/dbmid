@@ -6,6 +6,7 @@
     }
 ?>
 
+
 <html>
   <head>
 
@@ -46,6 +47,7 @@
 
   </head>
   <body class="">
+  
     <?php
 			include $_SERVER['DOCUMENT_ROOT'].'/dbmid/model/preloader/index.php';
 		?>
@@ -63,7 +65,61 @@
 						// include $_SERVER['DOCUMENT_ROOT'].'/model/fculogo/index.php';
 					?>
 				</a>
-				
+			
+			<?php
+					// Database connection details
+						$host = "localhost";
+						$username = "hj";
+						$password = "test1234";
+						$dbname = "dbmid";
+
+						// Connect to database
+						$conn = mysqli_connect($host, $username, $password, $dbname);
+
+						// Check connection
+						if (!$conn) {
+							die("Connection failed: " . mysqli_connect_error());
+						}
+
+							// Build SQL query based on filters
+							
+
+								$query = "SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, class_id, department_name,department_id, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name,d.department_id, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id) AS subquery 
+											 GROUP BY course_id, course_name
+											";
+								$result = mysqli_query($conn, $query);
+								$sql = "
+								SELECT `student`.*, `class`.*,`account`.*
+								FROM `account`
+									, `student`
+									, `class`
+								WHERE `account`.`account_id` = `student`.`account_id` AND `class`.`class_id` = `student`.`class_id` AND `account`.`account_id`='$account_id';
+							";
+
+
+							
+							 
+							 $result2 = mysqli_query($conn, $sql);
+							 while ($row2 = mysqli_fetch_array($result2)) {
+
+
+									$name = $row2['name'];
+									$account = $row2['account'];
+									$class_name = $row2['class_name'];
+
+								}
+							
+
+?>
+							
 		    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
 		      <span class="navbar-toggler-icon"></span>
 		    </button>
@@ -88,7 +144,9 @@
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
-				  <p class="m-0 font-white pe-3">D1176454</p>
+				  <p class="m-0 font-white pe-3"><?php 
+				  echo $class_name . " " . $account . " " . $name 
+				  ?></p>
 		        </li>
 				<li class="nav-item">
 					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
@@ -195,6 +253,7 @@
 			
 		</div>
 		
+		
 		<div class="container">
 
 <!-- 			<div class="v-slider">
@@ -204,45 +263,11 @@
 
 			<div class="col px-1">
 				<div class="row">
-					
-
-					<?php
-					// Database connection details
-						$host = "localhost";
-						$username = "hj";
-						$password = "test1234";
-						$dbname = "dbmid";
-
-						// Connect to database
-						$conn = mysqli_connect($host, $username, $password, $dbname);
-
-						// Check connection
-						if (!$conn) {
-							die("Connection failed: " . mysqli_connect_error());
-						}
-
-							// Build SQL query based on filters
-							
-
-								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name,department_id, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
-											FROM 
-											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location,d.department_id, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
-											 FROM course c 
-											 JOIN section s ON c.course_id = s.course_id 
-											 JOIN section_detail sd ON s.section_id = sd.section_id 
-											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
-											 JOIN class cl ON s.class_id=cl.class_id 
-											 JOIN department d on cl.department_id=d.department_id) AS subquery 
-											 GROUP BY course_id, course_name
-											";
-
-
-
-							
-							 $result = mysqli_query($conn, $query);
-							while ($row = mysqli_fetch_assoc($result)){
-							if (mysqli_num_rows($result) > 0&& $row['department_id']==57) {
+					<?php while ($row = mysqli_fetch_assoc($result)){
+							if (mysqli_num_rows($result) > 0&&$row['department_id']==57) {
 								// Print results in a table?>
+
+					
 								<div class="col-12 col-md-6 col-lg-4 col-xl-3 px-2">
 
 									<div class="col card mb-3 pt-2 px-2 pb-1" data-bs-toggle="modal" 

@@ -24,6 +24,29 @@
 						// Define variables for filters
 						$search_query = $department = $week = $time = $scode = $namecourse = "";
 						
+						$sql = "
+								SELECT `student`.*, `class`.*,`account`.*
+								FROM `account`
+									, `student`
+									, `class`
+								WHERE `account`.`account_id` = `student`.`account_id` AND `class`.`class_id` = `student`.`class_id` AND `account`.`account_id`='$account_id';
+							";
+
+
+							
+							 
+							 $result2 = mysqli_query($conn, $sql);
+							 while ($row2 = mysqli_fetch_array($result2)) {
+
+
+									$name = $row2['name'];
+									$account = $row2['account'];
+									$class_name = $row2['class_name'];
+
+								}
+						
+						
+						
 						// Handle form submission
 						if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							// Get filter values from form
@@ -66,25 +89,27 @@
 							if($time=="節"){
 								$time="";
 							}
-	
+							
 							// Build SQL query based on filters
 							if (!empty($search_query)) {
-								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+								$query = "SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
 											FROM 
-											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
 											 FROM course c 
 											 JOIN section s ON c.course_id = s.course_id 
 											 JOIN section_detail sd ON s.section_id = sd.section_id 
 											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
 											 JOIN class cl ON s.class_id=cl.class_id 
-											 JOIN department d on cl.department_id=d.department_id 
+											 JOIN department d on cl.department_id=d.department_id
 											 WHERE (s.course_id = '$search_query'  OR c.course_name like '%$search_query%' OR t.name like '%$search_query%')) AS subquery 
 											 GROUP BY course_id, course_name
 											 ";
-							} else {
-								$query = "SELECT course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+								
+							} 
+							else {
+								$query = "SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
 											FROM 
-											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,sd.location, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
 											 FROM course c 
 											 JOIN section s ON c.course_id = s.course_id 
 											 JOIN section_detail sd ON s.section_id = sd.section_id 
@@ -98,21 +123,54 @@
 
 							// Filter by department
 							if (!empty($department)) {
-								$query .= " AND s.class_id IN (SELECT class_id FROM class WHERE department_name = '$department')";
+								$query .= " INTERSECT SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE s.class_id IN (SELECT class_id FROM class WHERE department_name = '$department')) AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
+							
 
 							// Filter by week
 							if (!empty($week)) {
-								$query .= " AND sd.week = '$week'";
+							$query .= "INTERSECT SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE sd.week = '$week') AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
 
 							// Filter by time
 							if (!empty($time)) {
-								// Check for no time collisions
-								$query .= " AND sd.time_start = '$time'";
+								$query .= "INTERSECT SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE sd.time_start = '$time') AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
 							
-							 if (!empty($is_exclude)) {
+							if (!empty($is_exclude)) {
 							// Check for no time collisions
 									/*$query .= "AND course_id NOT IN (
 												  SELECT DISTINCT c.course_id
@@ -130,6 +188,7 @@
 													WHERE ss.student_id = <STUDENT_ID>
 												  ))";*/
 							}
+							
     }
 													
 							// Execute query and get results
@@ -223,7 +282,7 @@
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
-				  <p class="m-0 font-white pe-3">D1176454</p>
+				  <p class="m-0 font-white pe-3"><?php echo $class_name . " " . $account . " " . $name; ?></p>
 		        </li>
 				<li class="nav-item">
 					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
@@ -312,7 +371,6 @@
 									</div>
 									<div class="col-12 col-md-6 mb-2 d-flex align-items-center" for="is_exclude">
 
-										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude">
 
 										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude">										
 
