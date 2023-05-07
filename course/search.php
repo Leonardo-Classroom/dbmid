@@ -139,7 +139,7 @@
 											  INNER JOIN course c ON se.course_id = c.course_id
 											  INNER JOIN student s ON ss.student_id = s.student_id
 											  INNER JOIN account ac ON ac.account_id=s.account_id
-											  WHERE ac.account= 'D1176001'
+											  WHERE ac.account= '$account'
 											  AND ((subquery.week = sd.week AND subquery.time_start <= sd.time_start AND subquery.time_start <= sd.time_end)
 											  OR (subquery.week = sd.week AND subquery.time_start <= sd.time_end AND subquery.time_end <= sd.time_end)))
 												GROUP BY subquery.course_id, subquery.course_name
