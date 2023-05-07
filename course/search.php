@@ -119,7 +119,34 @@
 											 GROUP BY course_id, course_name
 											";
 							}
-							
+							if (!empty($is_exclude)) {
+							// Check for no time collisions
+									$query .= "intersect SELECT subquery.week, subquery.time_start, subquery.time_end, subquery.course_id, subquery.course_name, subquery.quota, subquery.quota_max, subquery.year, subquery.semester, subquery.note, subquery.isRequired, subquery.credit, subquery.name, subquery.class_name, subquery.class_id, subquery.department_name, subquery.times, subquery.locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											  FROM course c 
+											  JOIN section s ON c.course_id = s.course_id 
+											  JOIN section_detail sd ON s.section_id = sd.section_id 
+											  JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											  JOIN class cl ON s.class_id=cl.class_id 
+											  JOIN department d on cl.department_id=d.department_id
+											) AS subquery
+											WHERE NOT EXISTS (
+											  SELECT 1
+											  FROM section_student ss
+											  INNER JOIN section_detail sd ON ss.section_id = sd.section_id
+											  INNER JOIN section se ON sd.section_id = se.section_id
+											  INNER JOIN course c ON se.course_id = c.course_id
+											  INNER JOIN student s ON ss.student_id = s.student_id
+											  INNER JOIN account ac ON ac.account_id=s.account_id
+											  WHERE ac.account= 'D1176001'
+											  AND ((subquery.week = sd.week AND subquery.time_start <= sd.time_start AND subquery.time_start <= sd.time_end)
+											  OR (subquery.week = sd.week AND subquery.time_start <= sd.time_end AND subquery.time_end <= sd.time_end)))
+												GROUP BY subquery.course_id, subquery.course_name
+											";
+											}
+																		
+												
 
 							// Filter by department
 							if (!empty($department)) {
@@ -170,26 +197,8 @@
 											";
 							}
 							
-							if (!empty($is_exclude)) {
-							// Check for no time collisions
-									/*$query .= "AND course_id NOT IN (
-												  SELECT DISTINCT c.course_id
-												  FROM course c 
-												  JOIN section s ON c.course_id = s.course_id 
-												  JOIN section_detail sd ON s.section_id = sd.section_id 
-												  JOIN student_section ss ON s.section_id = ss.section_id 
-												  JOIN student st ON ss.student_id = st.student_id 
-												  WHERE st.student_id = <STUDENT_ID> 
-												  AND CONCAT('周', sd.week, ' ', sd.time_start, '-', sd.time_end, '節') IN (
-													SELECT CONCAT('周', sd.week, ' ', sd.time_start, '-', sd.time_end, '節')
-													FROM student_section ss
-													JOIN section s ON ss.section_id = s.section_id 
-													JOIN section_detail sd ON s.section_id = sd.section_id 
-													WHERE ss.student_id = <STUDENT_ID>
-												  ))";*/
 							}
 							
-    }
 													
 							// Execute query and get results
 							 $result = mysqli_query($conn, $query);
