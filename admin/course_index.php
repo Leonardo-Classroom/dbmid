@@ -150,10 +150,10 @@
 				</a>
 			</div>
 
-			<form method="POST" action="/dbmid/admin/search_course.php">
-				<input type="text" placeholder="課程ID" name="course_id">
+			<!-- <form method="GET" action="/dbmid/admin/course_students.php">
+				<input type="text" placeholder="課程ID" name="section_id">
 				<input type="submit" value="查詢">
-			</form>
+			</form> -->
             
 			<?php
                 for($i=0;$i<count($department_id);$i++){                    
