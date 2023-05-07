@@ -77,13 +77,30 @@ $sql = "
 			AND `course`.`course_id` = `section`.`course_id` 
 			AND `teacher`.`teacher_id` = `section_detail`.`teacher_id` 
 			AND `student`.`account_id` = `account`.`account_id` 
-			AND `account`.`account` = '$account';
+			AND `account`.`account` = '$account'
+		;
 ";
 
 $result = mysqli_query($conn, $sql);
+
+$mycourse_data[14][6];
+
 while ($row = mysqli_fetch_array($result)) {
-	echo $row[0];
-	echo $row[2];
+	$w = $row[5];
+	if ($w == "一")
+		$week = 1;
+	else if ($w == "二")
+		$week = 2;
+	else if ($w == "三")
+		$week = 3;
+	else if ($w == "四")
+		$week = 4;
+	else if ($w == "五")
+		$week = 5;
+
+	for ($i = $row[6]; $i <= $row[7]; $i++) {
+		$mycourse_data[$i][$week] = $row[2];
+	}
 
 }
 
@@ -250,55 +267,56 @@ mysqli_close($conn);
 
 				<!-- php loop echo 表格課表 -->
 				<?php
+
+
 				for ($i = 0; $i < 13; $i++) {
-					?>
-					<div class="row">
-						<?php
-						for ($j = 0; $j < 5; $j++) {
-							?>
-							<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-								<?php
-								if ($j == 0) {
-									echo $i + 1;
-								} else {
-									echo '"col border f-height centerVertically px-1 "';
-								}
-								?>
-							</div>
-							<?php
+
+					echo "<div class='row'>";
+
+					for ($j = 0; $j < 6; $j++) {
+						if ($j == 0) {
+
+							echo "<div class='col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0'>";
+							echo $i + 1;
+							echo "</div>";
+						} else {
+							echo "<div class='col border f-height centerVertically px-1'></div>";
 						}
-						?>
-						<?php
+						// else{
+				
+						// }
+					}
+					echo "</div>";
 				}
+
 				?>
 
 
-					<div class="col border f-height centerVertically px-1 " id="d1-1">
+				<div class="col border f-height centerVertically px-1 " id="d1-1">
 
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-1">
-
-						<p class="ㄊ-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-1">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-1">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">資料庫管理系統</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-1">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
+					<p class="m-0 p-0 form-ellipsis "></p>
 				</div>
+
+				<div class="col border f-height centerVertically px-1 " id="d2-1">
+
+					<p class="ㄊ-0 p-0 form-ellipsis "></p>
+				</div>
+
+				<div class="col border f-height centerVertically px-1 " id="d3-1">
+
+					<p class="m-0 p-0 form-ellipsis "></p>
+				</div>
+
+				<div class="col border f-height centerVertically px-1 bi-table" id="d4-1">
+
+					<p class="m-0 p-0 form-ellipsis " id="bi">資料庫管理系統</p>
+				</div>
+
+				<div class="col border f-height centerVertically px-1 " id="d5-1">
+
+					<p class="m-0 p-0 form-ellipsis "></p>
+				</div>
+
 
 				<div class="row">
 
