@@ -82,8 +82,8 @@ $sql = "
 
 $result = mysqli_query($conn, $sql);
 while ($row = mysqli_fetch_array($result)) {
-	// echo $row[0];
-	// echo $row[2];
+	echo $row[0];
+	echo $row[2];
 
 }
 
