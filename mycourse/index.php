@@ -56,8 +56,10 @@ $sql = "
 			`course`.`course_name`, 
 			`course`.`isRequired`, 
 			`section_detail`.`section_id`, 
-			`teacher`.`name`, `course`.`credit`, 
-			`section`.`quota`, `section`.`quota_max`, 
+			`teacher`.`name`, 
+			`course`.`credit`, 
+			`section`.`quota`, 
+			`section`.`quota_max`, 
 			`section_detail`.`week`, 
 			`section_detail`.`time_start`, 
 			`section_detail`.`time_end`, 
@@ -83,24 +85,25 @@ $sql = "
 
 $result = mysqli_query($conn, $sql);
 
-$mycourse_data[14][6];
+// $mycourse_data[14][6];
 
 while ($row = mysqli_fetch_array($result)) {
-	$w = $row[5];
-	if ($w == "一")
+
+	$week = $row[7];
+	if ($week == "一")
 		$week = 1;
-	else if ($w == "二")
+	else if ($week == "二")
 		$week = 2;
-	else if ($w == "三")
+	else if ($week == "三")
 		$week = 3;
-	else if ($w == "四")
+	else if ($week == "四")
 		$week = 4;
-	else if ($w == "五")
+	else if ($week == "五")
 		$week = 5;
 
-	for ($i = $row[6]; $i <= $row[7]; $i++) {
-		$mycourse_data[$i][$week] = $row[2];
-	}
+	// for ($i = $row[6]; $i <= $row[7]; $i++) {
+	// 	$mycourse_data[$i][$week] = $row[2];
+	// }
 
 }
 
@@ -131,8 +134,7 @@ mysqli_close($conn);
 	<!--~bootstrap-->
 
 	<!--fontawesome-->
-	<script src="https://kit.fontawesome.com/d53abecaf1.js">
-	</script>
+	<script src="https://kit.fontawesome.com/d53abecaf1.js">	</script>
 	<link href="https://kit-free.fontawesome.com/releases/latest/css/free-v4-shims.min.css" media="all"
 		rel="stylesheet">
 	<link href="https://kit-free.fontawesome.com/releases/latest/css/free-v4-font-face.min.css" media="all"
@@ -144,8 +146,7 @@ mysqli_close($conn);
 	<script src="/dbmid/main.js">	</script>
 
 	<link href="main.css" rel="stylesheet" type="text/css" />
-	<script src="main.js">
-	</script>
+	<script src="main.js">	</script>
 
 	<link rel="stylesheet/scss" type="text/css" href="/bubble.scss" />
 	<link href="/dbmid/bubble.css" rel="stylesheet" type="text/css" />
@@ -216,10 +217,7 @@ mysqli_close($conn);
 		</div>
 	</nav>
 
-
-	<P>TEST STRING要記得刪掉</P>
-
-
+	<!-- 導覽列結束 -->
 
 	<div class="container py-2">
 
@@ -279,6 +277,7 @@ mysqli_close($conn);
 							echo "<div class='col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0'>";
 							echo $i + 1;
 							echo "</div>";
+
 						} else {
 							echo "<div class='col border f-height centerVertically px-1'></div>";
 						}
@@ -764,57 +763,57 @@ mysqli_close($conn);
 
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">代碼</h5>
-							<h5 class="m-0 w-50">1211</h5>
+							<h5 class="fw-bold m-0 week$week-50">代碼</h5>
+							<h5 class="m-0 week$week-50">1211</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">授課教師</h5>
-							<h5 class="m-0 w-50">何霆鋒</h5>
+							<h5 class="fw-bold m-0 week$week-50">授課教師</h5>
+							<h5 class="m-0 week$week-50">何霆鋒</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">學分</h5>
-							<h5 class="m-0 w-50">2</h5>
+							<h5 class="fw-bold m-0 week$week-50">學分</h5>
+							<h5 class="m-0 week$week-50">2</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">實收名額</h5>
-							<h5 class="m-0 w-50">60</h5>
+							<h5 class="fw-bold m-0 week$week-50">實收名額</h5>
+							<h5 class="m-0 week$week-50">60</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">開放名額</h5>
-							<h5 class="m-0 w-50">70</h5>
+							<h5 class="fw-bold m-0 week$week-50">開放名額</h5>
+							<h5 class="m-0 week$week-50">70</h5>
 						</div>
 
 
 						<div class="col h-100 d-flex justify-content-between pb-2">
-							<h5 class="fw-bold m-0 w-50">上課時間</h5>
-							<h5 class="m-0 w-50">周四 3~4節</h5>
+							<h5 class="fw-bold m-0 week$week-50">上課時間</h5>
+							<h5 class="m-0 week$week-50">周四 3~4節</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">上課地點</h5>
-							<h5 class="m-0 w-50">科航204</h5>
+							<h5 class="fw-bold m-0 week$week-50">上課地點</h5>
+							<h5 class="m-0 week$week-50">科航204</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between pb-2">
-							<h5 class="fw-bold m-0 w-50">上課時間</h5>
-							<h5 class="m-0 w-50">周五 1~4節</h5>
+							<h5 class="fw-bold m-0 week$week-50">上課時間</h5>
+							<h5 class="m-0 week$week-50">周五 1~4節</h5>
 						</div>
 
 						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 w-50">上課地點</h5>
-							<h5 class="m-0 w-50">資電234</h5>
+							<h5 class="fw-bold m-0 week$week-50">上課地點</h5>
+							<h5 class="m-0 week$week-50">資電234</h5>
 						</div>
 
 						<div class="col h-100">
 							<h5 class="fw-bold m-0 pb-1">備註</h5>
-							<h5 class="m-0 w-100">2023/02/13~2023/04/13[第01~09周上課]</h5>
+							<h5 class="m-0 week$week-100">2023/02/13~2023/04/13[第01~09周上課]</h5>
 						</div>
 
-						<div class="col w-100 d-flex justify-content-center pt-3">
+						<div class="col week$week-100 d-flex justify-content-center pt-3">
 							<button class="btn btn-primary rounded-30 py-2 px-3" type="submit">退選</button>
 						</div>
 
