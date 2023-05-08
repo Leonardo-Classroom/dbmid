@@ -49,6 +49,8 @@ while ($row = mysqli_fetch_array($result)) {
 
 }
 
+$S_ID = $account;
+
 // continue
 $sql = "
 		SELECT DISTINCT
@@ -399,9 +401,10 @@ mysqli_close($conn);
 
 
 							<!-- Modal -->
-							<div class="modal fade font- px-0" <?php
+							<div class="modal fade font- px-0" style="color:black;" <?php
 							echo "id='modal" . $mycourse_data[$i][$j]["section_id"] . "'";
-							?> tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							?> tabindex="-1" aria-labelledby="exampleModalLabel"
+								aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
 									<div class="modal-content rounded-30">
 										<div class="modal-header">
@@ -420,7 +423,7 @@ mysqli_close($conn);
 
 												<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 													<h5 class="fw-bold ellipsis-1 m-0 ps-2">
-														<span>程式設計III程式設計III程式設計III</span>
+														<span>程式設計</span>
 													</h5>
 												</div>
 											</div>
@@ -484,7 +487,7 @@ mysqli_close($conn);
 
 													<a class="btn btn-primary rounded-30 py-2 px-3" <?php
 
-													echo ' href="./mycourse_withdraw.php?section_id=' . $mycourse_data[$i][$j]["section_id"] . '&student_id=' . $account_id . '"';
+													echo ' href="./mycourse_withdraw.php?section_id=' . $mycourse_data[$i][$j]["section_id"] . '&student_id=' . $student_id . '&S_ID=' . $S_ID . '"';
 													?>>退選</a>
 
 													<!-- <button  type="submit"></button> -->
