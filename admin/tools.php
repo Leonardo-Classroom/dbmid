@@ -8,52 +8,6 @@
 ?>
 
 
-<?php
-	// Database connection details
-	$host = "localhost";
-	$username = "hj";
-	$password = "test1234";
-	$dbname = "dbmid";
-
-	// Connect to database
-	$conn = mysqli_connect($host, $username, $password, $dbname);
-
-	// Check connection
-	if (!$conn) {
-		die("Connection failed: " . mysqli_connect_error());
-	}
-
-	
-	// Build SQL query based on filters
-	$sql = "
-        SELECT * FROM 
-        `department` 
-        WHERE `department_id` = 57
-	";
-
-	// Execute query and get results
-	$result = mysqli_query($conn, $sql);
-
-    $department_id=[];
-    $department_name=[];
-	while($row = mysqli_fetch_array($result)){
-
-        array_push($department_id, $row['department_id']);
-        array_push($department_name, $row['department_name']);		        
-		
-	}
-
-
-	// continue
-
-	
-
-
-
-	mysqli_close($conn);
-?>
-
-
 <html>
   <head>
 
@@ -115,7 +69,7 @@
 		    <div class="collapse navbar-collapse" id="navbarToggler">
 		      <ul class="navbar-nav me-auto mb-0 mb-lg-0">
 			  	<li class="nav-item">
-                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin">學生檢索</a>
+                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin">學生檢索</a>
 		        </li>
 				<li class="nav-item">
                     <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
@@ -124,7 +78,7 @@
                     <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_search.php">學生選課</a>
 		        </li>
 				<li class="nav-item">
-                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/tools.php">工具</a>
+                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin/tools.php">工具</a>
 		        </li>
 				
 		      </ul>
@@ -151,33 +105,10 @@
         <div class="container">
 
 			<div class="my-3">
-				<a href="/dbmid/admin/">
-					/所有科系>
-				</a>
+				<a href="/dbmid/admin/update_course_quota.php">更新課程人數</a>
 			</div>
 
-			<form method="POST" action="/dbmid/admin/search.php">
-				<input type="text" placeholder="學生帳號" name="student_account">
-				<input type="submit" value="查詢">
-			</form>
-            
-			<?php
-                for($i=0;$i<count($department_id);$i++){                    
-            ?>
-                    
-                    <a
-                        <?php
-                            echo "href='/dbmid/admin/classes.php?department_id=".$department_id[$i]."'";
-                        ?>
-                    >
-                        <?php
-                            echo $department_name[$i]."系";
-                        ?>
-                    </a>
-
-            <?php
-                }
-            ?>
+			
             
 
         </div>
