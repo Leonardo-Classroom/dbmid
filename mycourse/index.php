@@ -49,7 +49,6 @@ while ($row = mysqli_fetch_array($result)) {
 
 }
 
-
 // continue
 $sql = "
 		SELECT DISTINCT
@@ -110,11 +109,22 @@ for ($i = 0; $i < 13; $i++) {
 
 $section_ID = [];
 
+$credit_cnt = 0;
 
-$creidit_cnt = 0;
 while ($row = mysqli_fetch_array($result)) {
 
 	array_push($section_ID, $row['section_id']);
+
+	for ($i = 0; $i < count($section_ID) - 1; $i++) {
+		if ($row['section_id'] == $section_ID[$i]) {
+			array_pop($section_ID);
+			break;
+		} else {
+			// echo $row['credit'] . "_ ";
+			// $credit_cnt += $row['credit'];
+			// echo $credit_cnt . ", <br>";
+		}
+	}
 
 	$week = $row['week'];
 	if ($week == "一")
@@ -127,7 +137,6 @@ while ($row = mysqli_fetch_array($result)) {
 		$week = 4;
 	else if ($week == "五")
 		$week = 5;
-
 
 	for ($i = $row['time_start']; $i <= $row['time_end']; $i++) {
 		$mycourse_data[$i - 1][$week]["section_id"] = $row['section_id'];
@@ -146,7 +155,7 @@ while ($row = mysqli_fetch_array($result)) {
 
 }
 
-// print_r($section_ID);
+// print_r($section_ID); //print all section_id without redundancy
 
 // Check course table
 // for ($i = 0; $i < 13; $i++) {
@@ -162,6 +171,26 @@ while ($row = mysqli_fetch_array($result)) {
 // 	echo " # <br>";
 // }
 
+for ($i = 0; $i < count($section_ID); $i++) {
+	$section_detail[$section_ID[$i]]["credit"] = [];
+	// echo "<" . $section_detail[$section_ID[$i]]["credit"];
+}
+
+$sql = "
+	SELECT 
+		student_id, sum(credit)
+	FROM 
+		`section_student`
+		LEFT JOIN section on section.section_id = section_student.section_id
+		LEFT JOIN course on course.course_id=section.course_id
+	WHERE student_id =" . $student_id . "
+";
+
+$result = mysqli_query($conn, $sql);
+
+while ($row = mysqli_fetch_array($result)) {
+	$credit_cnt = $row['sum(credit)'];
+}
 
 // for($i=0; $i<count($section_student_id); $i++){
 // 	$section_detail[$section_id[$i]]["isRequired"]=$row['isRequired'];
@@ -175,8 +204,6 @@ while ($row = mysqli_fetch_array($result)) {
 // 	$section_detail[$section_id[$i]]["note"] = $row['note'];
 // 	$section_detail[$section_id[$i]]["t_name"] = $row['name'];
 // }
-
-
 
 
 mysqli_close($conn);
@@ -301,8 +328,10 @@ mysqli_close($conn);
 
 			<div class="col px-2">
 
-				<!-- 學分計算(not yet) -->
-				<p class="m-0">當前學分：16/30</p>
+				<!-- 學分計算(SQL: sum) -->
+				<p class="m-0">當前學分：
+					<?php echo $credit_cnt ?>/30
+				</p>
 
 				<!-- Day -->
 				<div class="row bg-light-grey font-white roundRT roundLT">
@@ -362,7 +391,7 @@ mysqli_close($conn);
 							echo '<div class="col border f-height centerVertically px-1"';
 						}
 						// (click) 課程資訊
-						if ($j != 0) {
+						if ($j != 0 && $mycourse_data[$i][$j]["section_id"] != 0) {
 							echo ' data-bs-toggle="modal" data-bs-target="#modal' . $mycourse_data[$i][$j]["section_id"] . '">';
 
 							?>
@@ -370,7 +399,7 @@ mysqli_close($conn);
 
 
 							<!-- Modal -->
-							<div class="modal fade px-0" <?php
+							<div class="modal fade font- px-0" <?php
 							echo "id='modal" . $mycourse_data[$i][$j]["section_id"] . "'";
 							?> tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 								<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
@@ -395,7 +424,6 @@ mysqli_close($conn);
 													</h5>
 												</div>
 											</div>
-
 
 
 											<div class="pt-0 pb-0 px-2 mb-2 pt-1">
@@ -453,9 +481,12 @@ mysqli_close($conn);
 												</div>
 
 												<div class="col week$week-100 d-flex justify-content-center pt-3">
-													<?php
-													echo '<a class="btn btn-primary rounded-30 py-2 px-3" href="admin\withdraw.php?section_id=' . $mycourse_data[$i][$j]["section_id"] . 'student_id=' . $account_id . '">退選</a>';
-													?>
+
+													<a class="btn btn-primary rounded-30 py-2 px-3" <?php
+
+													echo ' href="./mycourse_withdraw.php?section_id=' . $mycourse_data[$i][$j]["section_id"] . '&student_id=' . $account_id . '"';
+													?>>退選</a>
+
 													<!-- <button  type="submit"></button> -->
 												</div>
 
