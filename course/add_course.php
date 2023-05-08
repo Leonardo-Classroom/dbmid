@@ -21,8 +21,10 @@
 		die("Connection failed: " . mysqli_connect_error());
 	}
 
-$student_id=1;
-$section_id=1211;
+$student_id=$_GET["student_id"];
+$section_id=$_GET["section_id"];
+echo $student_id."<br>";
+echo $section_id."<br>";
 
 
 $sql = "
@@ -66,14 +68,26 @@ while($row = mysqli_fetch_array($result)){
     array_push($section_id_arr, $row['section_id']);       
 }
 if (count($section_id_arr)==0)
-    echo "可以加選";
+{
+    // $sql = "
+        
+// 	";
+
+// $result = mysqli_query($conn, $sql);
+    echo "<script language='javascript'>alert('加選成功!');</script>";
+    echo "<script language='javascript'>window.location.href = './index.php'</script>";
+    // echo "可以加選";
+}
+
 else
     echo "<script language='javascript'>alert('衝堂無法加選');</script>"; //跳出無法加選通知
+
+    for($i=0;$i<count($section_id_arr);$i++)
+    {
+        echo $section_id_arr[$i];
+    }
     echo "<script language='javascript'>window.location.href = './index.php'</script>";//
     exit;
-// for($i=0;$i<count($section_id_arr);$i++)
-// {
-//     echo $section_id_arr[$i];
-// }
+
 
 ?>
