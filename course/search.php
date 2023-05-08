@@ -125,9 +125,12 @@
 							}
 							if (!empty($is_exclude)) {
 							// Check for no time collisions
-									$query .= "intersect SELECT subquery.week, subquery.time_start, subquery.time_end, subquery.course_id, subquery.course_name, subquery.quota, subquery.quota_max, subquery.year, subquery.semester, subquery.note, subquery.isRequired, subquery.credit, subquery.name, subquery.class_name, subquery.class_id, subquery.department_name, subquery.times, subquery.locations
+									$query .= "intersect SELECT subquery.week, subquery.time_start, subquery.time_end, subquery.course_id, subquery.course_name, subquery.quota, subquery.quota_max, 
+									subquery.year, subquery.semester, subquery.note, subquery.isRequired, subquery.credit, subquery.name, subquery.class_name, subquery.class_id, subquery.department_name, 
+									subquery.times, subquery.locations
 											FROM 
-											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
 											  FROM course c 
 											  JOIN section s ON c.course_id = s.course_id 
 											  JOIN section_detail sd ON s.section_id = sd.section_id 
