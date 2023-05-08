@@ -86,10 +86,15 @@ $sql = "
 $result = mysqli_query($conn, $sql);
 
 // $mycourse_data[14][6];
+for ($i = 0; $i < 13; $i++) {
+	for ($j = 0; $j < 6; $j++) {
+		$mycourse_data[$i][$j] = 0;
+	}
+}
 
 while ($row = mysqli_fetch_array($result)) {
 
-	$week = $row[7];
+	$week = $row['week'];
 	if ($week == "一")
 		$week = 1;
 	else if ($week == "二")
@@ -101,11 +106,24 @@ while ($row = mysqli_fetch_array($result)) {
 	else if ($week == "五")
 		$week = 5;
 
-	// for ($i = $row[6]; $i <= $row[7]; $i++) {
-	// 	$mycourse_data[$i][$week] = $row[2];
-	// }
+	for ($i = $row['time_start']; $i <= $row['time_end']; $i++) {
+		$mycourse_data[$i - 1][$week] = $row['section_id'];
+	}
 
 }
+// Check course table
+// for ($i = 0; $i < 13; $i++) {
+// 	for ($j = 1; $j < 6; $j++) {
+// 		echo "| i:" . $i;
+// 		echo "j:" . $j;
+// 		if ($mycourse_data[$i][$j] != 0) {
+// 			echo "  #" . $mycourse_data[$i][$j];
+// 		} else {
+// 			echo "  #0000";
+// 		}
+// 	}
+// 	echo " # <br>";
+// }
 
 mysqli_close($conn);
 ?>
@@ -263,27 +281,35 @@ mysqli_close($conn);
 
 				</div>
 
-				<!-- php loop echo 表格課表 -->
+				<!-- php loop echo 表格 -->
 				<?php
-
 
 				for ($i = 0; $i < 13; $i++) {
 
-					echo "<div class='row'>";
+					echo '<div class="row">';
 
 					for ($j = 0; $j < 6; $j++) {
 						if ($j == 0) {
-
-							echo "<div class='col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0'>";
+							if ($i == 12)
+								echo '<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0 roundLB"';
+							else
+								echo '<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0"';
 							echo $i + 1;
-							echo "</div>";
 
+						} else if ($mycourse_data[$i][$j] != 0) {
+							echo '<div class="col border f-height centerVertically px-1 bi-table"';
+						} else if ($i == 12 && $j == 4) {
+							echo '<div class="col border f-height centerVertically px-1 roundRB"';
 						} else {
-							echo "<div class='col border f-height centerVertically px-1'></div>";
+							echo '<div class="col border f-height centerVertically px-1"';
 						}
-						// else{
-				
-						// }
+						// 課程資訊(click)  yet
+						echo ' data-bs-toggle="modal" data-bs-target="#exampleModal">';
+						echo '<p class="m-0 p-0 form-ellipsis ">';
+						if ($mycourse_data[$i][$j] != 0) {
+							echo $mycourse_data[$i][$j];
+						}
+						echo "</p></div>";
 					}
 					echo "</div>";
 				}
