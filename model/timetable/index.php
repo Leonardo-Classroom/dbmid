@@ -24,7 +24,7 @@
 		left join account on account.account_id=student.account_id
 		WHERE `account` = '".$account."' and `is_valid`=1
 	";//`is_valid`=1 -> 未退選
-
+	
 	// Execute query and get results
 	$result = mysqli_query($conn, $sql);
 	

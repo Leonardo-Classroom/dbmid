@@ -93,7 +93,7 @@ $current_credit=[];
 while($row = mysqli_fetch_array($result)){
     array_push($current_credit, $row['credit']);    
 }
-echo $current_credit[0]."<br>";
+// echo $current_credit[0]."<br>";
 
 //欲加選之學分
 $sql = "
@@ -108,11 +108,29 @@ $Add_credit=[];
 while($row = mysqli_fetch_array($result)){
     array_push($Add_credit, $row['credit']);       
 }
-echo $Add_credit[0]."<br>";
+// echo $Add_credit[0]."<br>";
 $over_credit=0;
 if($current_credit[0]+$Add_credit[0]>30)
     $over_credit++;
-if (count($section_id_overlap)==0&&count($course_name_overlap)==0&&$over_credit==0) //準備加選課程 
+
+//人數已滿的課程不可加選
+//確認人數是否已滿
+$sql = "
+        SELECT *
+        FROM `section`
+        WHERE section_id=".$section_id." AND quota>=quota_max
+	";
+$result = mysqli_query($conn, $sql);
+	
+$full=[];
+while($row = mysqli_fetch_array($result)){
+    array_push($full, $row['quota_max']); 
+}
+
+
+
+
+if (count($section_id_overlap)==0&&count($course_name_overlap)==0&&$over_credit==0&&count($full)==0) //準備加選課程 
 {
     //找出欲選課之department_id、isRequired以判斷是否可自行退選
     $sql = "
@@ -132,7 +150,7 @@ if (count($section_id_overlap)==0&&count($course_name_overlap)==0&&$over_credit=
         array_push($isRequired, $row['isRequired']);       
     }
 
-    //找出自己之department_id以判斷是否可自行退選
+    //找出自己之department_id，以判斷是否可自行退選
     $sql = "
     SELECT department_id
     FROM `student` 
@@ -149,6 +167,12 @@ if (count($section_id_overlap)==0&&count($course_name_overlap)==0&&$over_credit=
     //只當與"必修"欲選課同學院時，才無法自行退選
     if(($Add_department_id[0]==$my_department_id[0])&&($isRequired[0]==1))
         $is_withdrawable=0;
+    else if(($Add_department_id[0]!=$my_department_id[0])&&($isRequired[0]==1))//限制加選院外必修
+    {
+        echo "<script language='javascript'>alert('無權限加選院外必修...加選失敗!');</script>";
+        echo "<script language='javascript'>window.location.href = './index.php'</script>";
+        exit;
+    }
     else
         $is_withdrawable=1;
     
@@ -169,19 +193,28 @@ if (count($section_id_overlap)==0&&count($course_name_overlap)==0&&$over_credit=
     mysqli_query($conn, $sql);
 // $result = mysqli_query($conn, $sql);
     echo "<script language='javascript'>alert('加選成功!');</script>";
-    // echo "<script language='javascript'>window.location.href = '../mycourse/index.php'</script>";
+    echo "<script language='javascript'>window.location.href = '../mycourse/index.php'</script>";
     // echo "可以加選";
 }
 
 else//無法加選課程
 {
-    echo "<script language='javascript'>alert('無法加選!');</script>"; //跳出無法加選通知
-
-    for($i=0;$i<count($section_id_overlap);$i++)
-    {
-        echo $section_id_overlap[$i];
-    }
-    // echo "<script language='javascript'>window.location.href = './index.php'</script>";//
+    //通知加選失敗並通知原因
+    if(count($course_name_overlap)!=0)
+        echo "<script language='javascript'>alert('重複選修: ".$course_name_overlap[0]."...加選失敗!');</script>";
+    else if(count($section_id_overlap)!=0)
+        echo "<script language='javascript'>alert('與選課代碼:「".$section_id_overlap[0]."」衝堂...加選失敗!');</script>"; 
+    else if($over_credit!=0)
+        echo "<script language='javascript'>alert('超過學分上限...加選失敗!');</script>";
+    else if(count($full)!=0)
+        echo "<script language='javascript'>alert('修課人數已滿".$full[0]."人...加選失敗!');</script>";
+    else
+        echo "<script language='javascript'>alert('無法加選!');</script>"; 
+    // for($i=0;$i<count($section_id_overlap);$i++)
+    // {
+    //     echo $section_id_overlap[$i];
+    // }
+    echo "<script language='javascript'>window.location.href = './index.php'</script>";//
 }
 exit;
 ?>
