@@ -703,7 +703,7 @@
 															<h5 class="m-0 w-100"><?php echo $row['note']; ?></h5>
 														</div>
 														<div class="col w-100 d-flex justify-content-center pt-3">
-															<button class="btn btn-primary rounded-30 py-2 px-3" type="submit">加選</button>
+														<a class="btn btn-primary rounded-30 py-2 px-3" href="./add_course.php?student_id=<?php echo $account_id?>&section_id=<?php echo $row['course_id']?>">加選</a>
 														</div>
 													
 												</div>

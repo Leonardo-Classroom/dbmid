@@ -23,10 +23,10 @@
 
 $student_id=$_GET["student_id"];
 $section_id=$_GET["section_id"];
-echo $student_id."<br>";
-echo $section_id."<br>";
+// echo $student_id."<br>";
+// echo $section_id."<br>";
 
-
+//找出課表上與欲加選之衝堂的課
 $sql = "
         SELECT DISTINCT(section_student.section_id) FROM `section_student` 
         left join `section_detail` on `section_student`.`section_id`=`section_detail`.`section_id`
@@ -41,53 +41,147 @@ $sql = "
         (add_course.time_start<`section_detail`.`time_start`AND add_course.time_end>`section_detail`.`time_end`)
         )
 	";
-    //WHERE `account` = '".$account."' and `is_valid`=1
-//     SELECT * FROM `section_student` 
-//     left join `section_detail` on `section_student`.`section_id`=`section_detail`.`section_id`
-//     inner join (SELECT week,time_start,time_end FROM `section_detail` where section_id=1211) as add_course
-//     on add_course.week=section_detail.week
-//     where `student_id`=1 AND
-//     (
-//     (add_course.time_start>=`section_detail`.`time_start` AND add_course.time_start<=`section_detail`.`time_end`)
-//     OR
-//     (add_course.time_end>=`section_detail`.`time_start`AND add_course.time_end<=`section_detail`.`time_end`)
-//     OR
-//     (add_course.time_start<`section_detail`.`time_start`AND add_course.time_end>`section_detail`.`time_end`)
-//     )
-
-//     SELECT * FROM `section_student`
-// left JOIN`section_detail` on `section_detail`.`section_id`=`section_student`.`section_id`
-// where student_id=1  
-// ORDER BY `section_detail`.`week` ASC
+ 
 $result = mysqli_query($conn, $sql);
 	
-$section_id_arr=[];
-
+$section_id_overlap=[];//與欲加選衝堂的section_id
 
 while($row = mysqli_fetch_array($result)){
-    array_push($section_id_arr, $row['section_id']);       
+    array_push($section_id_overlap, $row['section_id']);       
 }
-if (count($section_id_arr)==0)
-{
-    // $sql = "
-        
-// 	";
 
+//判斷欲選課名已存在課表
+$sql = "
+    SELECT course_name
+    FROM `section` 
+    left join course on course.course_id=section.course_id
+    where section_id=".$section_id." AND course_name in(
+        SELECT course_name
+        FROM `section_student`
+        LEFT JOIN section on section.section_id= section_student.section_id
+        LEFT JOIN course on course.course_id=section.course_id
+        WHERE student_id=".$student_id."
+    );
+";
+$result = mysqli_query($conn, $sql);
+$course_name_overlap=[];
+while($row = mysqli_fetch_array($result)){
+    array_push($course_name_overlap, $row['course_name']);    
+}
+// echo count($section_id_overlap)."<br>";
+// echo $course_name_overlap[0]."<br>";
+
+//**************判斷加選後是否超過30學分*************
+// 目前學分數
+// $sql = "
+//     SELECT student_id,sum(credit) as credit
+//     FROM `section_student` 
+//     LEFT JOIN section on section.section_id = section_student.section_id
+//     LEFT JOIN course on course.course_id=section.course_id
+//     WHERE student_id =".$student_id."
+//     );
+// ";
+$sql = "
+        SELECT student_id,sum(credit) as credit
+        FROM `section_student` 
+        LEFT JOIN section on section.section_id = section_student.section_id
+        LEFT JOIN course on course.course_id=section.course_id
+        WHERE student_id =".$student_id."
+	";
+$result = mysqli_query($conn, $sql);
+$current_credit=[];
+while($row = mysqli_fetch_array($result)){
+    array_push($current_credit, $row['credit']);    
+}
+echo $current_credit[0]."<br>";
+
+//欲加選之學分
+$sql = "
+        SELECT credit
+        FROM section
+        LEFT JOIN course on section.course_id=course.course_id
+        WHERE section_id=".$section_id."
+	";
+$result = mysqli_query($conn, $sql);
+	
+$Add_credit=[];
+while($row = mysqli_fetch_array($result)){
+    array_push($Add_credit, $row['credit']);       
+}
+echo $Add_credit[0]."<br>";
+$over_credit=0;
+if($current_credit[0]+$Add_credit[0]>30)
+    $over_credit++;
+if (count($section_id_overlap)==0&&count($course_name_overlap)==0&&$over_credit==0) //準備加選課程 
+{
+    //找出欲選課之department_id、isRequired以判斷是否可自行退選
+    $sql = "
+    SELECT department_id,isRequired
+    FROM `section` 
+    left join course on course.course_id=section.course_id
+    left join class on section.class_id=class.class_id
+    where section_id=".$section_id."
+	";
+
+    $result = mysqli_query($conn, $sql);
+
+    $Add_department_id=[];
+    $isRequired=[];
+    while($row = mysqli_fetch_array($result)){
+        array_push($Add_department_id, $row['department_id']); 
+        array_push($isRequired, $row['isRequired']);       
+    }
+
+    //找出自己之department_id以判斷是否可自行退選
+    $sql = "
+    SELECT department_id
+    FROM `student` 
+    LEFT JOIN class ON class.class_id=student.class_id
+    where student_id=".$student_id."
+	";
+    $result = mysqli_query($conn, $sql);
+
+    $my_department_id=[];
+    while($row = mysqli_fetch_array($result)){
+        array_push($my_department_id, $row['department_id']);       
+    }
+
+    //只當與"必修"欲選課同學院時，才無法自行退選
+    if(($Add_department_id[0]==$my_department_id[0])&&($isRequired[0]==1))
+        $is_withdrawable=0;
+    else
+        $is_withdrawable=1;
+    
+    $sql = "
+    INSERT INTO `section_student`(
+        `section_id`, 
+        `student_id`, 
+        `is_withdrawable`, 
+        `is_valid`
+    ) VALUES (
+        ".$section_id.",
+        ".$student_id.",
+        ".$is_withdrawable.",
+        1
+    )
+	";
+    //加選進資料庫
+    mysqli_query($conn, $sql);
 // $result = mysqli_query($conn, $sql);
     echo "<script language='javascript'>alert('加選成功!');</script>";
-    echo "<script language='javascript'>window.location.href = './index.php'</script>";
+    // echo "<script language='javascript'>window.location.href = '../mycourse/index.php'</script>";
     // echo "可以加選";
 }
 
-else
-    echo "<script language='javascript'>alert('衝堂無法加選');</script>"; //跳出無法加選通知
+else//無法加選課程
+{
+    echo "<script language='javascript'>alert('無法加選!');</script>"; //跳出無法加選通知
 
-    for($i=0;$i<count($section_id_arr);$i++)
+    for($i=0;$i<count($section_id_overlap);$i++)
     {
-        echo $section_id_arr[$i];
+        echo $section_id_overlap[$i];
     }
-    echo "<script language='javascript'>window.location.href = './index.php'</script>";//
-    exit;
-
-
+    // echo "<script language='javascript'>window.location.href = './index.php'</script>";//
+}
+exit;
 ?>
