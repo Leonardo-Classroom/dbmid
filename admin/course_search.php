@@ -351,7 +351,9 @@
 			<div class="col">
 
 				<?php
-					if($student_id==0){
+					if(!isset($_POST['student_account'])){
+						
+					}else if($student_id==0){
 						echo "<script language='javascript'>alert('查無學生');</script>";
 					}else{
 
