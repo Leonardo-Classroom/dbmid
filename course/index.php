@@ -88,7 +88,7 @@
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
-				  <p class="m-0 font-white pe-3">D1176454</p>
+				  <p class="m-0 font-white pe-3"><?php echo $account ?></p>
 		        </li>
 				<li class="nav-item">
 					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
