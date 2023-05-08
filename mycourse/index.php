@@ -364,6 +364,112 @@ mysqli_close($conn);
 						// (click) 課程資訊
 						if ($j != 0) {
 							echo ' data-bs-toggle="modal" data-bs-target="#modal' . $mycourse_data[$i][$j]["section_id"] . '">';
+
+							?>
+
+
+
+							<!-- Modal -->
+							<div class="modal fade px-0" <?php
+							echo "id='modal" . $mycourse_data[$i][$j]["section_id"] . "'";
+							?> tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
+									<div class="modal-content rounded-30">
+										<div class="modal-header">
+											<h5 class="modal-title"></h5>
+											<button type="button" class="btn-close" data-bs-dismiss="modal"
+												aria-label="Close"></button>
+										</div>
+										<div class="modal-body">
+
+											<div class="row pt-0 pb-0 px-2 mb-3 pt-1">
+												<div class="col-auto text-right px-0 m-0">
+													<div class="h-100 d-flex align-items-end flex-column">
+														<h5 class="bi px-3 py-1 m-0">必修</h5>
+													</div>
+												</div>
+
+												<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
+													<h5 class="fw-bold ellipsis-1 m-0 ps-2">
+														<span>程式設計III程式設計III程式設計III</span>
+													</h5>
+												</div>
+											</div>
+
+
+
+											<div class="pt-0 pb-0 px-2 mb-2 pt-1">
+
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">代碼</h5>
+													<h5 class="m-0 week$week-50">1211</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">授課教師</h5>
+													<h5 class="m-0 week$week-50">何霆鋒</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">學分</h5>
+													<h5 class="m-0 week$week-50">2</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">實收名額</h5>
+													<h5 class="m-0 week$week-50">60</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">開放名額</h5>
+													<h5 class="m-0 week$week-50">70</h5>
+												</div>
+
+
+												<div class="col h-100 d-flex justify-content-between pb-2">
+													<h5 class="fw-bold m-0 week$week-50">上課時間</h5>
+													<h5 class="m-0 week$week-50">周四 3~4節</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">上課地點</h5>
+													<h5 class="m-0 week$week-50">科航204</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between pb-2">
+													<h5 class="fw-bold m-0 week$week-50">上課時間</h5>
+													<h5 class="m-0 week$week-50">周五 1~4節</h5>
+												</div>
+
+												<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
+													<h5 class="fw-bold m-0 week$week-50">上課地點</h5>
+													<h5 class="m-0 week$week-50">資電234</h5>
+												</div>
+
+												<div class="col h-100">
+													<h5 class="fw-bold m-0 pb-1">備註</h5>
+													<h5 class="m-0 week$week-100">2023/02/13~2023/04/13[第01~09周上課]</h5>
+												</div>
+
+												<div class="col week$week-100 d-flex justify-content-center pt-3">
+													<?php
+													echo '<a class="btn btn-primary rounded-30 py-2 px-3" href="admin\withdraw.php?section_id=' . $mycourse_data[$i][$j]["section_id"] . 'student_id=' . $account_id . '">退選</a>';
+													?>
+													<!-- <button  type="submit"></button> -->
+												</div>
+
+											</div>
+
+										</div>
+
+									</div>
+								</div>
+							</div>
+
+
+							<?php
+
 						}
 						echo '<p class="m-0 p-0 form-ellipsis ">';
 						if ($mycourse_data[$i][$j]["section_id"] != 0) {
@@ -375,7 +481,6 @@ mysqli_close($conn);
 				}
 
 				?>
-
 
 				<!-- 待刪除 (頭) -->
 				<!-- <div class="col px-2">
@@ -783,120 +888,9 @@ mysqli_close($conn);
 
 			</div>
 
-
 		</div>
 
-
-
-
 	</div>
-
-
-
-
-
-
-	<!-- Modal -->
-	<div class="modal fade px-0" <?php
-	echo "id='modal" . "2690" . "'";
-	?> tabindex="-1"
-		aria-labelledby="exampleModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
-			<div class="modal-content rounded-30">
-				<div class="modal-header">
-					<h5 class="modal-title"></h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-
-					<div class="row pt-0 pb-0 px-2 mb-3 pt-1">
-						<div class="col-auto text-right px-0 m-0">
-							<div class="h-100 d-flex align-items-end flex-column">
-								<h5 class="bi px-3 py-1 m-0">必修</h5>
-							</div>
-						</div>
-
-						<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
-							<h5 class="fw-bold ellipsis-1 m-0 ps-2">
-								<span>程式設計III程式設計III程式設計III</span>
-							</h5>
-						</div>
-					</div>
-
-
-
-					<div class="pt-0 pb-0 px-2 mb-2 pt-1">
-
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">代碼</h5>
-							<h5 class="m-0 week$week-50">1211</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">授課教師</h5>
-							<h5 class="m-0 week$week-50">何霆鋒</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">學分</h5>
-							<h5 class="m-0 week$week-50">2</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">實收名額</h5>
-							<h5 class="m-0 week$week-50">60</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">開放名額</h5>
-							<h5 class="m-0 week$week-50">70</h5>
-						</div>
-
-
-						<div class="col h-100 d-flex justify-content-between pb-2">
-							<h5 class="fw-bold m-0 week$week-50">上課時間</h5>
-							<h5 class="m-0 week$week-50">周四 3~4節</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">上課地點</h5>
-							<h5 class="m-0 week$week-50">科航204</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between pb-2">
-							<h5 class="fw-bold m-0 week$week-50">上課時間</h5>
-							<h5 class="m-0 week$week-50">周五 1~4節</h5>
-						</div>
-
-						<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
-							<h5 class="fw-bold m-0 week$week-50">上課地點</h5>
-							<h5 class="m-0 week$week-50">資電234</h5>
-						</div>
-
-						<div class="col h-100">
-							<h5 class="fw-bold m-0 pb-1">備註</h5>
-							<h5 class="m-0 week$week-100">2023/02/13~2023/04/13[第01~09周上課]</h5>
-						</div>
-
-						<div class="col week$week-100 d-flex justify-content-center pt-3">
-							<?php
-							echo '<a class="btn btn-primary rounded-30 py-2 px-3" href="admin\withdraw.php?section_id=' . $mycourse_data[$section_id] . 'student_id=' . $mycourse_data[$student_id] . '">退選</a>';
-							?>
-							<!-- <button  type="submit"></button> -->
-						</div>
-
-					</div>
-
-				</div>
-
-			</div>
-		</div>
-	</div>
-
-
-
-
 
 
 
