@@ -68,8 +68,8 @@ while($row = mysqli_fetch_array($result)){
 if (count($section_id_arr)==0)
     echo "可以加選";
 else
-    echo "<script language='javascript'>alert('衝堂無法加選');</script>";
-    echo "<script language='javascript'>window.location.href = './index.php'</script>";	
+    echo "<script language='javascript'>alert('衝堂無法加選');</script>"; //跳出無法加選通知
+    echo "<script language='javascript'>window.location.href = './index.php'</script>";//
     exit;
 // for($i=0;$i<count($section_id_arr);$i++)
 // {
