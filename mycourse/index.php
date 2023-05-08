@@ -52,7 +52,8 @@ while ($row = mysqli_fetch_array($result)) {
 
 // continue
 $sql = "
-		SELECT 
+		SELECT DISTINCT
+			`section_student`.`section_student_id`,
 			`course`.`course_name`, 
 			`course`.`isRequired`, 
 			`section_detail`.`section_id`, 
@@ -64,7 +65,9 @@ $sql = "
 			`section_detail`.`time_start`, 
 			`section_detail`.`time_end`, 
 			`section_detail`.`location`, 
-			`section`.`note`
+			`section`.`note`,
+			`section_student`.`is_withdrawable`,
+			`section_student`.`is_valid`
 		FROM 
 			`student`, 
 			`section`, 
@@ -78,7 +81,8 @@ $sql = "
 			AND `section`.`section_id` = `section_detail`.`section_id` 
 			AND `course`.`course_id` = `section`.`course_id` 
 			AND `teacher`.`teacher_id` = `section_detail`.`teacher_id` 
-			AND `student`.`account_id` = `account`.`account_id` 
+			AND `student`.`account_id` = `account`.`account_id`
+			AND  `section_student`.`is_valid`=1
 			AND `account`.`account` = '$account'
 		;
 ";
@@ -88,11 +92,29 @@ $result = mysqli_query($conn, $sql);
 // $mycourse_data[14][6];
 for ($i = 0; $i < 13; $i++) {
 	for ($j = 0; $j < 6; $j++) {
-		$mycourse_data[$i][$j] = 0;
+		$mycourse_data[$i][$j]["section_id"] = 0;
+		$mycourse_data[$i][$j]["course_name"] = 0;
+		$mycourse_data[$i][$j]["is_withdrawable"] = 0;
+		$mycourse_data[$i][$j]["isRequired"] = 0;
+		$mycourse_data[$i][$j]["credit"] = 0;
+		$mycourse_data[$i][$j]["quota"] = 0;
+		$mycourse_data[$i][$j]["quota_max"] = 0;
+		$mycourse_data[$i][$j]["week"] = 0;
+		$mycourse_data[$i][$j]["time_start"] = 0;
+		$mycourse_data[$i][$j]["time_end"] = 0;
+		$mycourse_data[$i][$j]["location"] = 0;
+		$mycourse_data[$i][$j]["note"] = 0;
+		$mycourse_data[$i][$j]["t_name"] = 0;
 	}
 }
 
+$section_ID = [];
+
+
+$creidit_cnt = 0;
 while ($row = mysqli_fetch_array($result)) {
+
+	array_push($section_ID, $row['section_id']);
 
 	$week = $row['week'];
 	if ($week == "一")
@@ -106,24 +128,56 @@ while ($row = mysqli_fetch_array($result)) {
 	else if ($week == "五")
 		$week = 5;
 
+
 	for ($i = $row['time_start']; $i <= $row['time_end']; $i++) {
-		$mycourse_data[$i - 1][$week] = $row['section_id'];
+		$mycourse_data[$i - 1][$week]["section_id"] = $row['section_id'];
+		$mycourse_data[$i - 1][$week]["course_name"] = $row['course_name'];
+		$mycourse_data[$i - 1][$week]["is_withdrawable"] = $row['is_withdrawable'];
+		$mycourse_data[$i - 1][$week]["is_valid"] = $row['is_valid'];
+		// for ($i = 0; $i < 13; $i++) {
+		// 	for ($j = 1; $j < 6; $j++) {
+		// 		if ($mycourse_data[$i][$j]["section_id"] == $row['section_id']) {
+		// 			$section_detail["section_id"]["isRequired"] = $row['isRequired'];
+		// 			// $mycourse_data[$i - 1][$week]["credit"] = $row['credit'];
+		// 		}
+		// 	}
+		// }
 	}
 
 }
+
+// print_r($section_ID);
+
 // Check course table
 // for ($i = 0; $i < 13; $i++) {
 // 	for ($j = 1; $j < 6; $j++) {
 // 		echo "| i:" . $i;
 // 		echo "j:" . $j;
 // 		if ($mycourse_data[$i][$j] != 0) {
-// 			echo "  #" . $mycourse_data[$i][$j];
+// 			echo "  #" . $mycourse_data[$i][$j]["section_id"];
 // 		} else {
 // 			echo "  #0000";
 // 		}
 // 	}
 // 	echo " # <br>";
 // }
+
+
+// for($i=0; $i<count($section_student_id); $i++){
+// 	$section_detail[$section_id[$i]]["isRequired"]=$row['isRequired'];
+// 	$section_detail[$section_id[$i]]["credit"] = $row['credit'];
+// 	$section_detail[$section_id[$i]]["quota"] = $row['quota'];
+// 	$section_detail[$section_id[$i]]["quota_max"] = $row['quota_max'];
+// 	$section_detail[$section_id[$i]]["week"] = $row['week'];
+// 	$section_detail[$section_id[$i]]["time_start"] = $row['time_start'];
+// 	$section_detail[$section_id[$i]]["time_end"] = $row['time_end'];
+// 	$section_detail[$section_id[$i]]["location"] = $row['location'];
+// 	$section_detail[$section_id[$i]]["note"] = $row['note'];
+// 	$section_detail[$section_id[$i]]["t_name"] = $row['name'];
+// }
+
+
+
 
 mysqli_close($conn);
 ?>
@@ -291,23 +345,29 @@ mysqli_close($conn);
 					for ($j = 0; $j < 6; $j++) {
 						if ($j == 0) {
 							if ($i == 12)
-								echo '<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0 roundLB"';
+								echo '<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0 roundLB">';
 							else
-								echo '<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0"';
+								echo '<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">';
 							echo $i + 1;
 
-						} else if ($mycourse_data[$i][$j] != 0) {
-							echo '<div class="col border f-height centerVertically px-1 bi-table"';
-						} else if ($i == 12 && $j == 4) {
+						} else if ($mycourse_data[$i][$j]["section_id"] != 0) {
+							if ($mycourse_data[$i][$j]["is_withdrawable"] == 0) {
+								echo '<div class="col border f-height centerVertically px-1 bi-table"';
+							} else {
+								echo '<div class="col border f-height centerVertically px-1 xuan-table"';
+							}
+						} else if ($i == 12 && $j == 5) {
 							echo '<div class="col border f-height centerVertically px-1 roundRB"';
 						} else {
 							echo '<div class="col border f-height centerVertically px-1"';
 						}
-						// 課程資訊(click)  yet
-						echo ' data-bs-toggle="modal" data-bs-target="#exampleModal">';
+						// (click) 課程資訊
+						if ($j != 0) {
+							echo ' data-bs-toggle="modal" data-bs-target="#modal' . $mycourse_data[$i][$j]["section_id"] . '">';
+						}
 						echo '<p class="m-0 p-0 form-ellipsis ">';
-						if ($mycourse_data[$i][$j] != 0) {
-							echo $mycourse_data[$i][$j];
+						if ($mycourse_data[$i][$j]["section_id"] != 0) {
+							echo $mycourse_data[$i][$j]["course_name"];
 						}
 						echo "</p></div>";
 					}
@@ -317,429 +377,409 @@ mysqli_close($conn);
 				?>
 
 
-				<div class="col border f-height centerVertically px-1 " id="d1-1">
+				<!-- 待刪除 (頭) -->
+				<!-- <div class="col px-2">
+					<div class="row">
 
-					<p class="m-0 p-0 form-ellipsis "></p>
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							2
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-2">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d2-2" data-bs-toggle="modal"
+							data-bs-target="#exampleModal">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">行動裝置程式設計</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 xuan-table" id="d3-2">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">網際系統設計</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-2">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">資料庫管理系統</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d5-2">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">系統分析與設計</p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							3
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-3">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d2-3">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">行動裝置程式設計</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 xuan-table" id="d3-3">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">網際系統設計</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-3">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">資料庫專題</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d5-3">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">系統分析與設計</p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							4
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-4">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d2-4">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">行動裝置程式設計</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 xuan-table" id="d3-4">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">網際系統設計</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-4">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">資料庫專題</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d5-4">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">系統分析與設計</p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							5
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-5">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-5">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-5">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-5">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">資訊網路</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-5">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							6
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-6">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-6">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-6">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-6">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">資訊網路</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-6">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							7
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-7">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d2-7">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">生涯運動</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-7">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-7">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">週會/班會</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-7">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							8
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-8">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d2-8">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">生涯運動</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-8">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 bi-table" id="d4-8">
+
+							<p class="m-0 p-0 form-ellipsis " id="bi">週會/班會</p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-8">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							9
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-9">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-9">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-9">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d4-9">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-9">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							10
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-10">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-10">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-10">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d4-10">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-10">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							11
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-11">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-11">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-11">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d4-11">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-11">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
+							12
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-12">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-12">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-12">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d4-12">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d5-12">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
+
+					<div class="row">
+
+						<div
+							class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0 roundLB">
+							13
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d1-13">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d2-13">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d3-13">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 " id="d4-13">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+						<div class="col border f-height centerVertically px-1 roundRB" id="d5-13">
+
+							<p class="m-0 p-0 form-ellipsis "></p>
+						</div>
+
+					</div>
 				</div>
 
-				<div class="col border f-height centerVertically px-1 " id="d2-1">
-
-					<p class="ㄊ-0 p-0 form-ellipsis "></p>
-				</div>
-
-				<div class="col border f-height centerVertically px-1 " id="d3-1">
-
-					<p class="m-0 p-0 form-ellipsis "></p>
-				</div>
-
-				<div class="col border f-height centerVertically px-1 bi-table" id="d4-1">
-
-					<p class="m-0 p-0 form-ellipsis " id="bi">資料庫管理系統</p>
-				</div>
-
-				<div class="col border f-height centerVertically px-1 " id="d5-1">
-
-					<p class="m-0 p-0 form-ellipsis "></p>
-				</div>
-
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						2
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-2">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d2-2" data-bs-toggle="modal"
-						data-bs-target="#exampleModal">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">行動裝置程式設計</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 xuan-table" id="d3-2">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">網際系統設計</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-2">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">資料庫管理系統</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d5-2">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">系統分析與設計</p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						3
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-3">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d2-3">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">行動裝置程式設計</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 xuan-table" id="d3-3">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">網際系統設計</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-3">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">資料庫專題</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d5-3">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">系統分析與設計</p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						4
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-4">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d2-4">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">行動裝置程式設計</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 xuan-table" id="d3-4">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">網際系統設計</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-4">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">資料庫專題</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d5-4">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">系統分析與設計</p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						5
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-5">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-5">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-5">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-5">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">資訊網路</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-5">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						6
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-6">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-6">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-6">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-6">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">資訊網路</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-6">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						7
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-7">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d2-7">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">生涯運動</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-7">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-7">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">週會/班會</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-7">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						8
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-8">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d2-8">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">生涯運動</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-8">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 bi-table" id="d4-8">
-
-						<p class="m-0 p-0 form-ellipsis " id="bi">週會/班會</p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-8">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						9
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-9">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-9">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-9">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d4-9">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-9">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						10
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-10">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-10">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-10">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d4-10">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-10">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						11
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-11">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-11">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-11">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d4-11">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-11">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0">
-						12
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-12">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-12">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-12">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d4-12">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d5-12">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-auto centerVertically px-1 bg-light-grey font-white border left-title px-0 roundLB">
-						13
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d1-13">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d2-13">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d3-13">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 " id="d4-13">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-					<div class="col border f-height centerVertically px-1 roundRB" id="d5-13">
-
-						<p class="m-0 p-0 form-ellipsis "></p>
-					</div>
-
-				</div>
-
+				 -->
+				<!-- 待刪除 (尾) -->
 
 			</div>
 
@@ -758,7 +798,7 @@ mysqli_close($conn);
 
 	<!-- Modal -->
 	<div class="modal fade px-0" <?php
-	echo "id='" . "exampleModal" . "'";
+	echo "id='modal" . "2690" . "'";
 	?> tabindex="-1"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-md">
@@ -840,7 +880,10 @@ mysqli_close($conn);
 						</div>
 
 						<div class="col week$week-100 d-flex justify-content-center pt-3">
-							<button class="btn btn-primary rounded-30 py-2 px-3" type="submit">退選</button>
+							<?php
+							echo '<a class="btn btn-primary rounded-30 py-2 px-3" href="admin\withdraw.php?section_id=' . $mycourse_data[$section_id] . 'student_id=' . $mycourse_data[$student_id] . '">退選</a>';
+							?>
+							<!-- <button  type="submit"></button> -->
 						</div>
 
 					</div>
@@ -850,8 +893,6 @@ mysqli_close($conn);
 			</div>
 		</div>
 	</div>
-
-
 
 
 
