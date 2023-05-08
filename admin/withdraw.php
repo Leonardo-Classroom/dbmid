@@ -42,7 +42,11 @@
     // Execute query and get results
     $result = mysqli_query($conn, $sql);
 
+    mysqli_close($conn);
+
     echo "<script language='javascript'>alert('退選成功');</script>";
     echo "<script language='javascript'>window.location.href = './course.php?student_id=".$student_id."'</script>";	
+
+    
     exit;
 ?>
