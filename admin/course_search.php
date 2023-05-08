@@ -239,6 +239,9 @@
 				<li class="nav-item">
                     <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin/course_search.php">學生選課</a>
 		        </li>
+				<li class="nav-item">
+                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/tools.php">工具</a>
+		        </li>
 				
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">

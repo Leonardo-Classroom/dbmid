@@ -8,6 +8,60 @@
 ?>
 
 
+<?php
+	// Database connection details
+	$host = "localhost";
+	$username = "hj";
+	$password = "test1234";
+	$dbname = "dbmid";
+
+	// Connect to database
+	$conn = mysqli_connect($host, $username, $password, $dbname);
+
+	// Check connection
+	if (!$conn) {
+		die("Connection failed: " . mysqli_connect_error());
+	}
+
+	
+	// Build SQL query based on filters
+	$sql = "
+        SELECT * 
+        FROM `class` 
+        LEFT JOIN `department` ON `class`.`department_id`=`department`.`department_id` 
+        WHERE `department`.`department_id`=57;
+	";
+
+	// Execute query and get results
+	$result = mysqli_query($conn, $sql);
+
+    
+    $class_id=[];
+    $department_id=[];
+    $class_name=[];
+    $department_name=[];
+
+	while($row = mysqli_fetch_array($result)){
+
+        array_push($class_id, $row['class_id']);
+        array_push($department_id, $row['department_id']);
+        array_push($class_name, $row['class_name']);
+        array_push($department_name, $row['department_name']);
+        
+		
+	}
+
+
+	// continue
+
+	
+
+
+
+	mysqli_close($conn);
+?>
+
+
 <html>
   <head>
 
@@ -108,6 +162,25 @@
 				<a href="/dbmid/admin/update_course_quota.php">更新課程人數</a>
 			</div>
 
+			<p class="m-0">班級預選</p>
+            <?php
+                for($i=0;$i<count($class_id);$i++){                    
+            ?>
+                    <div class="mb-2">
+						<a
+							<?php
+								echo "href='/dbmid/admin/class_add_course.php?class_id=".$class_id[$i]."'";
+							?>
+						>
+							<?php
+								echo $class_name[$i];
+							?>
+						</a>
+                    </div>
+
+            <?php
+                }
+            ?>
 			
             
 
