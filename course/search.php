@@ -22,12 +22,37 @@
 						}
 
 						// Define variables for filters
-						$search_query = $department = $week = $time = "";
+						$search_query = $department = $week = $time = $scode = $namecourse = "";
+						
+						$sql = "
+								SELECT `student`.*, `class`.*,`account`.*
+								FROM `account`
+									, `student`
+									, `class`
+								WHERE `account`.`account_id` = `student`.`account_id` AND `class`.`class_id` = `student`.`class_id` AND `account`.`account_id`='$account_id';
+							";
 
+
+							
+							 
+							 $result2 = mysqli_query($conn, $sql);
+							 while ($row2 = mysqli_fetch_array($result2)) {
+
+
+									$name = $row2['name'];
+									$account = $row2['account'];
+									$class_name = $row2['class_name'];
+
+								}
+						
+						
+						
 						// Handle form submission
 						if ($_SERVER["REQUEST_METHOD"] == "POST") {
 							// Get filter values from form
-							$search_query = ($_POST["search_query"]);
+							$search_query=($_POST["search_query"]);
+							
+							
 							$department =($_POST["department"]);
 							$week =($_POST["week"]);
 							$time =($_POST["time"]);
@@ -67,49 +92,132 @@
 							
 							// Build SQL query based on filters
 							if (!empty($search_query)) {
-								$query = "SELECT * FROM course c
-										  JOIN section s ON c.course_id = s.course_id
-										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  JOIN class cl ON s.class_id=cl.class_id
-										  WHERE (c.course_name='$search_query' OR s.course_id='$search_query' OR t.name='$search_query')";
-							} else {
-								$query = "SELECT * FROM course c
-										  JOIN section s ON c.course_id = s.course_id
-										  JOIN section_detail sd ON s.section_id = sd.section_id
-										  JOIN teacher t ON sd.teacher_id = t.teacher_id
-										  JOIN class cl ON s.class_id=cl.class_id";
+								$query = "SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name,
+								class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE (s.course_id = '$search_query'  OR c.course_name like '%$search_query%' OR t.name like '%$search_query%')) AS subquery 
+											 GROUP BY course_id, course_name
+											 ";
+								
+							} 
+							else {
+								$query = "SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, 
+								class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id) AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
+							if (!empty($is_exclude)) {
+							// Check for no time collisions
+									$query .= "intersect SELECT subquery.week, subquery.time_start, subquery.time_end, subquery.course_id, subquery.course_name, subquery.quota, subquery.quota_max, 
+									subquery.year, subquery.semester, subquery.note, subquery.isRequired, subquery.credit, subquery.name, subquery.class_name, subquery.class_id, subquery.department_name, 
+									subquery.times, subquery.locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											  FROM course c 
+											  JOIN section s ON c.course_id = s.course_id 
+											  JOIN section_detail sd ON s.section_id = sd.section_id 
+											  JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											  JOIN class cl ON s.class_id=cl.class_id 
+											  JOIN department d on cl.department_id=d.department_id
+											) AS subquery
+											WHERE NOT EXISTS (
+											  SELECT 1
+											  FROM section_student ss
+											  INNER JOIN section_detail sd ON ss.section_id = sd.section_id
+											  INNER JOIN section se ON sd.section_id = se.section_id
+											  INNER JOIN course c ON se.course_id = c.course_id
+											  INNER JOIN student s ON ss.student_id = s.student_id
+											  INNER JOIN account ac ON ac.account_id=s.account_id
+											  WHERE ac.account= '$account'
+											  AND ((subquery.week = sd.week AND subquery.time_start <= sd.time_start AND subquery.time_start <= sd.time_end)
+											  OR (subquery.week = sd.week AND subquery.time_start <= sd.time_end AND subquery.time_end <= sd.time_end)))
+												GROUP BY subquery.course_id, subquery.course_name
+											";
+											}
+																		
+												
 
 							// Filter by department
 							if (!empty($department)) {
-								$query .= " AND s.class_id IN (SELECT class_id FROM class WHERE department_id = '$department')";
+								$query .= " INTERSECT SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, 
+								class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE s.class_id IN (SELECT class_id FROM class WHERE department_name = '$department')) AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
+							
 
 							// Filter by week
 							if (!empty($week)) {
-								$query .= " AND sd.week = '$week'";
+							$query .= "INTERSECT SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, 
+							class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE sd.week = '$week') AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
 
 							// Filter by time
 							if (!empty($time)) {
-								// Check for no time collisions
-								$query .= " AND sd.time_start='$time'";
+								$query .= "INTERSECT SELECT week, time_start, time_end, course_id, course_name, quota, quota_max, year, semester, note, isRequired, credit, name, class_name, 
+								class_id, department_name, GROUP_CONCAT(DISTINCT times ORDER BY times SEPARATOR 'o\n') AS times, GROUP_CONCAT(DISTINCT locations ORDER BY locations SEPARATOR 'o\n') AS locations
+											FROM 
+											( SELECT c.course_id, c.course_name, s.quota, s.quota_max, s.year, s.semester, s.note, c.isRequired, c.credit, t.name, cl.class_name,cl.class_id,sd.location,
+											sd.week,sd.time_start,sd.time_end,d.department_name, CONCAT('周',sd.week, ' ', sd.time_start, '-', sd.time_end, '節') AS times,CONCAT(sd.location) AS locations
+											 FROM course c 
+											 JOIN section s ON c.course_id = s.course_id 
+											 JOIN section_detail sd ON s.section_id = sd.section_id 
+											 JOIN teacher t ON sd.teacher_id = t.teacher_id 
+											 JOIN class cl ON s.class_id=cl.class_id 
+											 JOIN department d on cl.department_id=d.department_id
+											 WHERE sd.time_start = '$time') AS subquery 
+											 GROUP BY course_id, course_name
+											";
 							}
 							
-							/* if (!empty($is_exclude)) {
-							// Check for no time collisions
-									$query .= " AND NOT EXISTS (SELECT * FROM section_detail sd2
-                                     JOIN section s2 ON sd2.section_id = s2.section_id
-                                     WHERE s2.class_id = s.class_id
-                                     AND sd2.week = '$week'
-                                     AND ((sd2.time_start <= '$time' AND sd2.time_end > '$time')
-                                     OR ('$time' <= sd2.time_end AND '$time' > sd2.time_start)))";
-							}*/
-    }
+							}
+							
 													
 							// Execute query and get results
 							 $result = mysqli_query($conn, $query);
+							 if (!$result) {
+    trigger_error(mysqli_error($conn), E_USER_ERROR);
+}
 							 
 							 
 ?>
@@ -196,7 +304,7 @@
 		      </ul>
 			  <ul class="d-flex justify-content-end m-0">
 			  	<li class="nav-item d-flex align-items-center">
-				  <p class="m-0 font-white pe-3">D1176454</p>
+				  <p class="m-0 font-white pe-3"><?php echo $class_name . " " . $account . " " . $name; ?></p>
 		        </li>
 				<li class="nav-item">
 					<form class="d-flex m-0" action="/dbmid/login/logout.php">			
@@ -243,9 +351,9 @@
 										<select name="department" class="col-auto form-control py-1 px-2">
 											<option>科系</option>
 											<option>資電學院</option>
-											<option>資訊系</option>
-											<option>電子系</option>
-											<option>電機系</option>
+											<option>資訊</option>
+											<option>電子</option>
+											<option>電機</option>
 										</select>
 									</div>
 									<div class="col-12 col-md-6 mb-2">
@@ -284,7 +392,10 @@
 										
 									</div>
 									<div class="col-12 col-md-6 mb-2 d-flex align-items-center" for="is_exclude">
+
+
 										<input class="py-0" type="checkbox" id="is_exclude" name="is_exclude" value="is_exclude">										
+
 										<label class="py-0 ps-1 pe-5" for="is_exclude">過濾衝堂</label>
 										<!-- <input type="text" class="col-12 py-1" id="" placeholder="科目名稱"> -->
 									</div>
@@ -346,7 +457,7 @@
 											
 											<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 												<h5 class="fw-bold ellipsis-1 m-0 ">
-													<span><?php echo $row['course_name'] .' '. $row['course_name'] .' '. $row['course_name']; ?></span>
+													<span><?php echo $row['course_name']; ?></span>
 												</h5>
 											</div>          
 										</div>
@@ -380,17 +491,41 @@
 										<div class="row pb-0 px-3 mb-2">
 											<div class="col text-left px-0 m-0">
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0">周<?php
-															if($row['time_start']==$row['time_end'])
-																echo $row['week'] . ' ' . $row['time_start']; 
-															else
-																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
-															?>節</h5>
+													<h5 class="m-0"><?php
+																$n=0;
+																$str=$row['times'];
+																$delim='o';
+																$words= explode($delim,$str);
+																foreach($words as $word)
+																{
+																	if($n==0){
+																		sscanf($word, "周%s %d-%d節", $day,$time_str, $time_end);
+																		if($time_str==$time_end){
+																			echo "周".$day." ".$time_str."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day." ".$time_str."-".$time_end."節";
+																			$n=$n+1;
+																		}
+																	}
+																	else{
+																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
+																		if($time_str1==$time_end1){
+																			echo "周".$day1." ".$time_str1."節";
+																		}
+																		else{
+																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																		}
+																	}
+															?></h5>
 												</div>
 											</div>
 											<div class="col-auto text-right px-0 m-0">           
 												<div class="h-100 d-flex align-items-center">
-													<h5 class="m-0"></h5>
+													<h5 class="m-0"><?php
+														}
+													?></h5>
 												</div>
 											</div>
 										</div>   
@@ -433,7 +568,7 @@
 													
 													<div class="col text-left pe-0 ps-1 m-0  d-flex align-items-center">
 														<h5 class="fw-bold ellipsis-1 m-0 ps-2">
-															<span ><?php echo $row['course_name'] .' '. $row['course_name'] .' '. $row['course_name']; ?></span>
+															<span ><?php echo $row['course_name']; ?></span>
 														</h5>
 													</div>			
 												</div>
@@ -475,20 +610,85 @@
 
 														<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50">上課時間</h5>
-															<h5 class="m-0 w-50">周<?php
-															if($row['time_start']==$row['time_end'])
-																echo $row['week'] . ' ' . $row['time_start']; 
-															else
-																echo $row['week'] . ' ' . $row['time_start'] . '~' .$row['time_end'];
-															?>節</h5>
+															<h5 class="m-0 w-50"><?php
+																$n=0;
+																$str=$row['times'];
+																$delim='o';
+																$words= explode($delim,$str);
+																foreach($words as $word)
+																{
+																	if($n==0){
+																		sscanf($word, "周%s %d-%d節", $day,$time_str, $time_end);
+																		if($time_str==$time_end){
+																			echo "周".$day." ".$time_str."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day." ".$time_str."-".$time_end."節";
+																			$n=$n+1;
+																		}
+																		echo "<br>";
+																	}
+																	else{
+																		sscanf($word, " 周%s %d-%d節", $day1, $time_str1, $time_end1);
+																		if($time_str1==$time_end1){
+																			echo "周".$day1." ".$time_str1."節";
+																			$n=$n+1;
+																		}
+																		else{
+																			echo "周".$day1." ".$time_str1."-".$time_end1."節";
+																			$n=$n+1;
+																		}
+																	}
+																}
+															?></h5>
 														</div>
 
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50">上課地點</h5>
-															<h5 class="m-0 w-50"><?php echo $row['location']; ?></h5>
+															<h5 class="m-0 w-50"><?php
+																$str2=$row['locations'];
+																$flag=0;
+																for($l=0;$l<strlen($str2);$l++)
+																{
+																	if($str2[$l]=='o')
+																	{
+																		$flag=1;
+																		break;
+																	}
+																}
+																
+																if($flag==1)
+																{
+																	$i=0;
+																	$delim='o';
+																	$words2= explode($delim,$str2);
+																	foreach($words2 as $word2)
+																	{
+																	if($i==0){
+																		echo $word2;
+																		$i=$i+1;
+																		}
+																	else if($i==1){
+																			echo $word2;
+																	}
+																	echo "<br>";
+																	}
+																}
+																else if($flag==0&&$n==2)
+																{
+																	echo $str2;
+																	echo "<br>";
+																	echo $str2;
+																}
+																else
+																{
+																	echo $str2;
+																}
+															?></h5>
 														</div>
 
-														<div class="col h-100 d-flex justify-content-between pb-2">
+														<!--<div class="col h-100 d-flex justify-content-between pb-2">
 															<h5 class="fw-bold m-0 w-50"></h5>
 															<h5 class="m-0 w-50"></h5>	
 														</div>
@@ -496,7 +696,7 @@
 														<div class="col h-100 d-flex justify-content-between border-bottom pb-2 mb-2">
 															<h5 class="fw-bold m-0 w-50"></h5>
 															<h5 class="m-0 w-50"></h5>
-														</div>
+														</div>-->
 
 														<div class="col h-100">
 															<h5 class="fw-bold m-0 pb-1">備註</h5>
@@ -513,9 +713,9 @@
 									</div>
 								  </div>
 								</div>
-								
+
 							<?php
-							}else {
+							} else {
 								echo "No results found.";
 							}
 							}

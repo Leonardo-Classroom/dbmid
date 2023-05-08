@@ -26,43 +26,28 @@
 	
 	// Build SQL query based on filters
 	$sql = "
-
-		SELECT `section_student`.`section_student_id`,`section_student`.`section_id`,`student`.`student_id`,`student`.`name` as 'student_name',`class`.`class_name`,`department`.*,`course`.`course_name`
-		FROM `section_student` 
-		LEFT JOIN `student` ON `section_student`.`student_id`=`student`.`student_id`
-		LEFT JOIN `class` ON `student`.`class_id`=`class`.`class_id`
-		LEFT JOIN `department` ON `class`.`department_id`=`department`.`department_id`
-		LEFT JOIN `section` ON `section_student`.`section_id`=`section`.`section_id`
-		LEFT JOIN `course` ON `section`.`course_id`=`course`.`course_id`  
-		WHERE `section_student`.`section_id` = ".$_GET["section_id"].";  
-		
+        SELECT * 
+        FROM `class` 
+        LEFT JOIN `department` ON `class`.`department_id`=`department`.`department_id` 
+        WHERE `department`.`department_id`=57;
 	";
 
 	// Execute query and get results
 	$result = mysqli_query($conn, $sql);
 
     
-    $section_student_id=[];
-    $section_id=[];
-    $student_id=[];
-	$student_name=[];
-	$class_name=[];
-
-	$department_id=[];
-	$department_name=[];
-	$course_name=[];
+    $class_id=[];
+    $department_id=[];
+    $class_name=[];
+    $department_name=[];
 
 	while($row = mysqli_fetch_array($result)){
 
-        array_push($section_student_id, $row['section_student_id']);
-        array_push($section_id, $row['section_id']);
-        array_push($student_id, $row['student_id']);
-		array_push($student_name, $row['student_name']);
-		array_push($class_name, $row['class_name']);
-
-		array_push($department_id, $row['department_id']);
-		array_push($department_name, $row['department_name']);
-		array_push($course_name, $row['course_name']);
+        array_push($class_id, $row['class_id']);
+        array_push($department_id, $row['department_id']);
+        array_push($class_name, $row['class_name']);
+        array_push($department_name, $row['department_name']);
+        
 		
 	}
 
@@ -141,13 +126,13 @@
                     <a class="nav-link postloader" aria-current="page" href="/dbmid/admin">學生檢索</a>
 		        </li>
 				<li class="nav-item">
-                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
+                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_index.php">課程檢索</a>
 		        </li>
 				<li class="nav-item">
                     <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/course_search.php">學生選課</a>
 		        </li>
 				<li class="nav-item">
-                    <a class="nav-link postloader" aria-current="page" href="/dbmid/admin/tools.php">工具</a>
+                    <a class="nav-link postloader active" aria-current="page" href="/dbmid/admin/tools.php">工具</a>
 		        </li>
 				
 		      </ul>
@@ -173,50 +158,30 @@
 
         <div class="container">
 
-            <div class="my-3">
-				<span>
-					<a href="/dbmid/admin/">
-						/所有科系
-					</a>
-					<a
-						<?php
-							echo "href='/dbmid/admin/course_department.php?department_id=".$department_id[0]."'";
-						?>
-					>
-						<?php
-							echo "/".$department_name[0]."系";
-						?>
-					</a>
-					<a
-						<?php
-							echo "href='/dbmid/admin/course_students.php?section_id=".$section_id[0]."'";
-						?>
-					>
-						<?php
-							echo "/".$class_name[0]." ".$course_name[0].">";
-						?>
-					</a>
-				</span>
+			<div class="my-3">
+				<a href="/dbmid/admin/update_course_quota.php">更新課程人數</a>
 			</div>
-            
+
+			<p class="m-0">班級預選</p>
             <?php
-                for($i=0;$i<count($section_id);$i++){                    
+                for($i=0;$i<count($class_id);$i++){                    
             ?>
                     <div class="mb-2">
-                        <a
-                            <?php
-                                echo "href='/dbmid/admin/course.php?student_id=".$student_id[$i]."'";
-                            ?>
-                        >
-                            <?php
-                                echo $class_name[$i]." ".$student_name[$i];
-                            ?>
-                        </a>
+						<a
+							<?php
+								echo "href='/dbmid/admin/class_add_course.php?class_id=".$class_id[$i]."'";
+							?>
+						>
+							<?php
+								echo $class_name[$i];
+							?>
+						</a>
                     </div>
 
             <?php
                 }
             ?>
+			
             
 
         </div>
