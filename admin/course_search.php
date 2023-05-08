@@ -10,7 +10,7 @@
 <?php
 
 
-	$student_id=1;
+	$student_id=0;
 	if(isset($_POST['student_account'])){
 		
 		$student_account=$_POST['student_account'];
@@ -351,7 +351,11 @@
 			<div class="col">
 
 				<?php
-					if(isset($_POST['student_account'])){
+					if(!isset($_POST['student_account'])){
+						
+					}else if($student_id==0){
+						echo "<script language='javascript'>alert('查無學生');</script>";
+					}else{
 
 					
 						for($i=0;$i<count($section_id);$i++){
@@ -491,7 +495,7 @@
 
 
 <?php
-	if(isset($_POST['student_account'])){
+	if($student_id!=0){
 		mysqli_close($conn);
 	}
 	
