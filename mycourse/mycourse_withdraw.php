@@ -85,11 +85,11 @@ while ($row = mysqli_fetch_array($result)) {
 //系統判斷是否加選
 if (!$is_withdrawable) {
     echo "<script language = 'javascript'>alert('課務公告： " . $S_ID . " 同學，此為<必修>課程，學生無法自行退選喔！');</script>";
-} elseif (($credit_cnt - $credit_drop) < 9) {
+} else if (($credit_cnt - $credit_drop) < 9) {
     echo "<script language = 'javascript'>alert('課務公告： " . $S_ID . " 同學，退選後您的學分總和將<低於最低學分限制>，故無法退選！');</script>";
 } else {
     //進行退選
-    //---------------------------------------section_student 是否要刪除資料列？
+    // ---------------------------------------section_student 刪除資料列
     $sql = "
         UPDATE `section_student` 
             SET is_valid = 0
