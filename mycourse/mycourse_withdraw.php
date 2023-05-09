@@ -66,7 +66,7 @@ while ($row = mysqli_fetch_array($result)) {
 }
 echo "<br>#欲退學分--> " . $credit_drop . " <br>";
 echo "<br>#該院系必(1)選(0)修--> " . $isRequired_drop . " <br>";
-echo "<br>#計算退選後學分： " . $credit_cnt - $credit_drop . "<br>";
+echo "<br>#計算退選後學分： " . ($credit_cnt - $credit_drop) . "<br>";
 
 //必修課不可退選
 $sql = "
