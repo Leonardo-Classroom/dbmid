@@ -66,7 +66,7 @@ while ($row = mysqli_fetch_array($result)) {
 }
 echo "<br>#欲退學分--> " . $credit_drop . " <br>";
 echo "<br>#該院系必(1)選(0)修--> " . $isRequired_drop . " <br>";
-echo $credit_cnt - $credit_drop;
+echo "<br>#計算退選後學分： " . $credit_cnt - $credit_drop . "<br>";
 
 //必修課不可退選
 $sql = "
@@ -104,7 +104,7 @@ if (!$is_withdrawable) {
 
     echo "<script language = 'javascript'>alert('課務公告： " . $S_ID . " 同學，課程退選成功！');</script>";
 }
-// echo '<script language = "javascript"> window.location.href = "./index.php?student_id=' . $student_id . '"</script>';
+echo '<script language = "javascript"> window.location.href = "./index.php?student_id=' . $student_id . '"</script>';
 
 
 
