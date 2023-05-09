@@ -180,7 +180,7 @@ for ($i = 0; $i < count($section_ID); $i++) {
 
 $sql = "
 	SELECT 
-		student_id, sum(credit)
+		DISTINCT student_id, sum(credit)
 	FROM 
 		`section_student`
 		LEFT JOIN section on section.section_id = section_student.section_id
