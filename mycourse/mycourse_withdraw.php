@@ -36,6 +36,8 @@ $sql = "
             LEFT JOIN section on section.section_id = section_student.section_id
             LEFT JOIN course on course.course_id=section.course_id
         WHERE student_id =" . $student_id . "
+	AND is_valid = 1;
+
 ";
 
 $result = mysqli_query($conn, $sql);
