@@ -32,16 +32,16 @@ $sql = "
         left join `section_detail` on `section_student`.`section_id`=`section_detail`.`section_id`
         inner join (SELECT week,time_start,time_end FROM `section_detail` where section_id=".$section_id.") as add_course
         on add_course.week=section_detail.week
-        where `student_id`=".$student_id." AND
+        where `student_id`=".$student_id." AND is_valid=1 AND
         (
         (add_course.time_start>=`section_detail`.`time_start` AND add_course.time_start<=`section_detail`.`time_end`)
         OR
         (add_course.time_end>=`section_detail`.`time_start`AND add_course.time_end<=`section_detail`.`time_end`)
         OR
         (add_course.time_start<`section_detail`.`time_start`AND add_course.time_end>`section_detail`.`time_end`)
-        )
+        );
 	";
- 
+
 $result = mysqli_query($conn, $sql);
 	
 $section_id_overlap=[];//與欲加選衝堂的section_id
@@ -60,9 +60,9 @@ $sql = "
         FROM `section_student`
         LEFT JOIN section on section.section_id= section_student.section_id
         LEFT JOIN course on course.course_id=section.course_id
-        WHERE student_id=".$student_id."
+        WHERE student_id=".$student_id." AND is_valid=1
     );
-";
+"; 
 $result = mysqli_query($conn, $sql);
 $course_name_overlap=[];
 while($row = mysqli_fetch_array($result)){
@@ -73,14 +73,6 @@ while($row = mysqli_fetch_array($result)){
 
 //**************判斷加選後是否超過30學分*************
 // 目前學分數
-// $sql = "
-//     SELECT student_id,sum(credit) as credit
-//     FROM `section_student` 
-//     LEFT JOIN section on section.section_id = section_student.section_id
-//     LEFT JOIN course on course.course_id=section.course_id
-//     WHERE student_id =".$student_id."
-//     );
-// ";
 $sql = "
         SELECT student_id,sum(credit) as credit
         FROM `section_student` 
@@ -121,7 +113,7 @@ $sql = "
         WHERE section_id=".$section_id." AND quota>=quota_max
 	";
 $result = mysqli_query($conn, $sql);
-	
+
 $full=[];
 while($row = mysqli_fetch_array($result)){
     array_push($full, $row['quota_max']); 
