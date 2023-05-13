@@ -63,6 +63,7 @@ $sql = "
         WHERE student_id=".$student_id." AND is_valid=1
     );
 "; 
+
 $result = mysqli_query($conn, $sql);
 $course_name_overlap=[];
 while($row = mysqli_fetch_array($result)){
