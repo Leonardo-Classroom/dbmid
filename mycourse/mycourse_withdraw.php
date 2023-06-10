@@ -36,8 +36,7 @@ $sql = "
             LEFT JOIN section on section.section_id = section_student.section_id
             LEFT JOIN course on course.course_id=section.course_id
         WHERE student_id =" . $student_id . "
-	AND is_valid = 1;
-
+	        AND is_valid = 1;
 ";
 
 $result = mysqli_query($conn, $sql);
@@ -105,8 +104,6 @@ if (!$is_withdrawable) {
     echo "<script language = 'javascript'>alert('課務公告： " . $S_ID . " 同學，課程退選成功！');</script>";
 }
 echo '<script language = "javascript"> window.location.href = "./index.php?student_id=' . $student_id . '"</script>';
-
-
 
 mysqli_close($conn);
 
